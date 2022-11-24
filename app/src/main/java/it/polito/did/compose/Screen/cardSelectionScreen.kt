@@ -4,8 +4,11 @@ import android.util.Log
 import android.view.View
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.swipeable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -15,6 +18,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -27,10 +31,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import it.polito.did.compose.Components.cardCarousel
-import it.polito.did.compose.Components.infoRow
-import it.polito.did.compose.Components.pushResult
-import it.polito.did.compose.Components.undetailedCard
+import it.polito.did.compose.Components.*
 import it.polito.did.compose.DataClasses.Card
 import it.polito.did.compose.GameModel
 import it.polito.did.compose.R
@@ -39,7 +40,7 @@ import java.lang.Math.abs
 import java.lang.Math.log
 
 
-@OptIn(ExperimentalMotionApi::class)
+@OptIn(ExperimentalMotionApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: GameModel, usableWidth : Dp, usableHeight : Dp) {
 
@@ -60,6 +61,10 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
        mutableStateOf("null")
     }
 
+    var progress by remember {
+        mutableStateOf(0f)
+    }
+
     val ableToPlay = gm.ableToPLay.observeAsState()
     val playerCards = gm.playerCards.observeAsState()
 
@@ -76,7 +81,7 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                     }
                 } else {
                     when {
-                        (y > 0  && direction == Direction.Up) -> {
+                        (y > 0 && direction == Direction.Up) -> {
                             direction = Direction.Down
                             cardPlayable = "null"
                         }
@@ -107,6 +112,7 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
             }
         }
         //todo: sistemare il binding che salta
+        //todo : trasformare il drag in uno swipe e passare lo swipe amount al progress dello swipeable
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
 
@@ -138,9 +144,10 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
 
                         when {
                             direction == Direction.None -> {
-                                MotionLayout(
+                                SwipeableMotionLayout(
                                     motionScene = MotionScene(content = motionScene),
                                     constraintSetName = "start",
+                                    targetProgress = 1f,
                                     modifier = Modifier
                                         .fillMaxSize()
 
@@ -156,9 +163,10 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                             }
 
                             direction == Direction.Right -> {
-                                MotionLayout(
+                                SwipeableMotionLayout(
                                     motionScene = MotionScene(content = motionScene),
                                     constraintSetName = "shiftRight",
+                                    targetProgress = 1f,
                                     animationSpec = tween(
                                         1000,
                                         easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
@@ -183,9 +191,10 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                                 }
                             }
                             direction == Direction.Left -> {
-                                MotionLayout(
+                                SwipeableMotionLayout(
                                     motionScene = MotionScene(content = motionScene),
                                     constraintSetName = "shiftLeft",
+                                    targetProgress = 1f,
                                     animationSpec = tween(
                                         1000,
                                         easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
@@ -209,9 +218,10 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                                 }
                             }
                             direction == Direction.Up -> {
-                                MotionLayout(
+                                SwipeableMotionLayout(
                                     motionScene = MotionScene(content = motionScene),
                                     constraintSetName = "shiftUp",
+                                    targetProgress = 1f,
                                     animationSpec = tween(
                                         1000,
                                         easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
@@ -236,9 +246,10 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                             direction == Direction.Down -> {
                                 Log.d("in down", "")
                                 //todo : scoprire perchè non anima qui
-                                MotionLayout(
+                                SwipeableMotionLayout(
                                     motionScene = MotionScene(content = motionScene),
                                     constraintSetName = "start",
+                                    targetProgress = 1f,
                                     animationSpec = tween(
                                         1000,
                                         easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
