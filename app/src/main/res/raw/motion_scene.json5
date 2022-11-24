@@ -1,0 +1,241 @@
+{
+  ConstraintSets: {
+
+    Variables : {
+      topWidth : 'TopWidth',
+      topHeight : 'TopHeight',
+      midWidth : 'MidWidth',
+      midHeight : 'MidHeight',
+      minWidth : 'MinWidth',
+      minHeight : 'MinHeight',
+    },
+    start : {
+      guide : {
+        start: ['parent', 'start', 0],
+        end: ['parent', 'end', 0],
+        bottom: ['parent', 'bottom', 0],
+      },
+      card0 : {
+        rotationZ :  0,
+        translationZ : 0,
+        width: 0,
+        height: 0,
+        circular : ['guide', 0, 0]
+      },
+      card3 : {
+        rotationZ :  0,
+        translationZ : 5,
+        width: 'TopWidth',
+        height: 'TopHeight',
+        circular : ['guide', 0, 'centralDist']
+      },
+      card2 : {
+        rotationZ :  345,
+        translationZ: 4,
+        width: 'MidWidth',
+        height: 'MidHeight',
+        circular : ['guide', 330, 'firstDist']
+      },
+      card4 : {
+        rotationZ :  15,
+        translationZ : 4,
+        width: 'MidWidth',
+        height: 'MidHeight',
+        circular : ['guide', 30, 'firstDist']
+      },
+      card1 : {
+        rotationZ :  330,
+        translationZ: 3,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 300, 'secondDist']
+      },
+      card5 : {
+        rotationZ :  30,
+        translationZ : 3,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 60, 'secondDist']
+      },
+      card6 : {
+        rotationZ :  0,
+        translationZ : 0,
+        width: 0,
+        height: 0,
+        circular : ['guide', 0, 0]
+      }
+    },
+
+    shiftLeft: {
+      guide : {
+        start: ['parent', 'start', 0],
+        end: ['parent', 'end', 0],
+        bottom: ['parent', 'bottom', 0],
+      },
+      card0 : {
+        rotationZ :  0,
+        translationZ : 0,
+        width: 0,
+        height: 0,
+        circular : ['guide', 0, 0]
+      },
+      card3 : {
+        rotationZ :  -15,
+        translationZ : 4,
+        width: 'MidWidth',
+        height: 'MidHeight',
+        circular : ['guide', 330, 'firstDist']
+      },
+      card2 : {
+        rotationZ :  330,
+        translationZ: 3,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 300, 'secondDist']
+      },
+      card4 : {
+        rotationZ :  0,
+        translationZ : 5,
+        width: 'TopWidth',
+        height: 'TopHeight',
+        circular : ['guide', 0, 'centralDist']
+      },
+      card1 : {
+        rotationZ :  315,
+        translationZ: 2,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 180, 'thirdDist']
+      },
+      card5 : {
+        rotationZ :  15,
+        translationZ : 4,
+        width: 'MidWidth',
+        height: 'MidHeight',
+        circular : ['guide', 30, 'firstDist']
+      },
+      card6 : {
+        rotationZ :  30,
+        translationZ : 3,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 60, 'secondDist']
+      }
+},
+
+    shiftRight: {
+      guide : {
+        start: ['parent', 'start', 0],
+        end: ['parent', 'end', 0],
+        bottom: ['parent', 'bottom', 0],
+      },
+      card3 : {
+        rotationZ :  15,
+        translationZ : 4,
+        width: 'MidWidth',
+        height: 'MidHeight',
+        circular : ['guide', 30, 'firstDist']
+      },
+      card2 : {
+        rotationZ :  360,
+        translationZ: 5,
+        width: 'TopWidth',
+        height: 'TopHeight',
+        circular : ['guide', 360, 'centralDist']
+      },
+      card4 : {
+        rotationZ :  30,
+        translationZ : 3,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 60, 'secondDist']
+      },
+      card1 : {
+        rotationZ :  345,
+        translationZ: 4,
+        width: 'MidWidth',
+        height: 'MidHeight',
+        circular : ['guide', 330, 'firstDist']
+      },
+      card0 : {
+        rotationZ :  -30,
+        translationZ: 3,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 300, 'secondDist']
+      },
+      card5 : {
+        rotationZ :  45,
+        translationZ : 2,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 180, 'thirdDist']
+      },
+      card6 : {
+        rotationZ :  0,
+        translationZ : 0,
+        width: 0,
+        height: 0,
+        circular : ['guide', 0, 0]
+      }
+    },
+
+    shiftUp : {
+      guide : {
+        start: ['parent', 'start', 0],
+        end: ['parent', 'end', 0],
+        bottom: ['parent', 'bottom', 0],
+      },
+      card0 : {
+        rotationZ :  0,
+        translationZ : 0,
+        width: 0,
+        height: 0,
+        circular : ['guide', 0, 0]
+      },
+      card3 : {
+        rotationZ :  0,
+        translationZ : 5,
+        width: 'TopWidth',
+        height: 'TopHeight',
+        circular : ['guide', 0, 'centralUpDist']
+      },
+      card2 : {
+        rotationZ :  345,
+        translationZ: 4,
+        width: 'MidWidth',
+        height: 'MidHeight',
+        circular : ['guide', 330, 'firstUpDist']
+      },
+      card4 : {
+        rotationZ :  15,
+        translationZ : 4,
+        width: 'MidWidth',
+        height: 'MidHeight',
+        circular : ['guide', 30, 'firstUpDist']
+      },
+      card1 : {
+        rotationZ :  330,
+        translationZ: 3,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 300, 'secondUpDist']
+      },
+      card5 : {
+        rotationZ :  30,
+        translationZ : 3,
+        width: 'MinWidth',
+        height: 'MinHeight',
+        circular : ['guide', 60, 'secondUpDist']
+      },
+      card6 : {
+        rotationZ :  0,
+        translationZ : 0,
+        width: 0,
+        height: 0,
+        circular : ['guide', 0, 0]
+      }
+    },
+
+},
+}

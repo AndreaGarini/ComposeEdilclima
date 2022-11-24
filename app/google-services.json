@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1026708416761",
+    "firebase_url": "https://tesi-55e58-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "tesi-55e58",
+    "storage_bucket": "tesi-55e58.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026708416761:android:a94117a367c72b9f4b1a28",
+        "android_client_info": {
+          "package_name": "it.polito.did.compose"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1026708416761-11halgtb1p5bpii0us4hpbkfc9ial4mr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtO-pmZbKXK6fmqRzQlB5WH5AI7QAF-gQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1026708416761-11halgtb1p5bpii0us4hpbkfc9ial4mr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
