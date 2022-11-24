@@ -19,7 +19,7 @@ import it.polito.did.compose.Screen.Direction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: () -> Unit){
+fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: () -> Unit, pagerCardModifier : Modifier){
 
     val playedCards = gm.playedCardsPerTeam.observeAsState()
 
@@ -49,7 +49,7 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
     }
 
 
-    Row (modifier = Modifier.fillMaxSize()){
+    Row (modifier = pagerCardModifier){
         Column(modifier = Modifier
             .fillMaxHeight()
             .weight(1f),

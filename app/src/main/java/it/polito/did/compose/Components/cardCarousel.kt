@@ -11,26 +11,31 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
+import androidx.core.math.MathUtils
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.pager.*
 import it.polito.did.compose.GameModel
 import it.polito.did.compose.ui.theme.GameTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Unit){
 
       val pagerState = rememberPagerState()
+      val coroutineScope = rememberCoroutineScope()
 
       Column(modifier = Modifier.fillMaxSize()) {
           ScrollableTabRow(
@@ -39,7 +44,9 @@ fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Uni
               // Override the indicator, using the provided pagerTabIndicatorOffset modifier
               indicator = { tabPositions ->
                   TabRowDefaults.Indicator(
-                      Modifier.pagerTabIndicatorOffset(pagerState, tabPositions).background(Color.Transparent)
+                      Modifier
+                          .pagerTabIndicatorOffset(pagerState, tabPositions)
+                          .background(Color.Transparent)
                   )
               },
               backgroundColor = Color.Transparent,
@@ -52,7 +59,9 @@ fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Uni
                       text = { Text(title) },
                       selected = pagerState.currentPage == index,
                       onClick = {
-                            //todo : coroutine per animare lo scroll
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
                            },
                   )
               }
@@ -63,7 +72,15 @@ fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Uni
               state = pagerState,
               modifier = Modifier.weight(2.5f)
           ) { index ->
-              pagerCard(index, gm, cardPlayable, animateToStart = animateToStart)
+              val pagerCardModifier = Modifier.fillMaxSize().
+                  graphicsLayer {
+                      val pageOffset = calculateCurrentOffsetForPage(index).absoluteValue
+
+                      scaleX = (1f - (pageOffset * 0.3f))
+                      scaleY = (1f - (pageOffset * 0.3f))
+                      alpha = 1 - pageOffset
+                  }
+              pagerCard(index, gm, cardPlayable, animateToStart = animateToStart, pagerCardModifier)
           }
       }
 }

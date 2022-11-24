@@ -13,19 +13,19 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.navigation.NavController
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.pager.*
 import it.polito.did.compose.Components.detailedCard
 import it.polito.did.compose.Components.infoRow
 import it.polito.did.compose.Components.pagerCard
 import it.polito.did.compose.Components.pagerInfoCard
 import it.polito.did.compose.DataClasses.Card
 import it.polito.did.compose.GameModel
+import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -38,6 +38,8 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
     val playedCards = gm.playedCardsPerTeam.observeAsState()
 
     val ableToPlay = gm.ableToPLay.observeAsState()
+
+    val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -61,7 +63,9 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
                 Tab(
                     text = { Text(title) },
                     selected = pagerState.currentPage == index,
-                    onClick = { //todo: utilizzare le coroutine per fare lo scrollToPage
+                    onClick = { coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
                     },
                 )
             }
@@ -72,11 +76,19 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
             state = pagerState,
             modifier = Modifier.weight(5f)
         ) { index ->
+                    val detailedCardModifier = Modifier.
+                    graphicsLayer {
+                        val pageOffset = calculateCurrentOffsetForPage(index).absoluteValue
+
+                        scaleX = (1f - (pageOffset * 0.3f))
+                        scaleY = (1f - (pageOffset * 0.3f))
+                        alpha = 1 - pageOffset
+                    }
             Column(modifier = Modifier
                 .fillMaxHeight()
                 .padding(horizontal = usableWidth.times(0.12f))) {
                 val cardCode : String? = playedCards.value!!.get(gm.team)?.get(gm.gameLogic.months[index])
-                detailedCard(gm.gameLogic.cardsMap[cardCode], gm)
+                detailedCard(gm.gameLogic.cardsMap[cardCode], gm, detailedCardModifier)
             }
         }
         

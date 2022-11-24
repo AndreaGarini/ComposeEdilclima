@@ -19,12 +19,12 @@ import it.polito.did.compose.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun detailedCard( card: Card?, gm: GameModel){
+fun detailedCard( card: Card?, gm: GameModel, detailedCardModifier : Modifier){
 
      val playedCards = gm.playedCardsPerTeam.observeAsState()
 
     if (card != null){
-        Card() {
+        Card(modifier = detailedCardModifier) {
             Column(modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally) {
@@ -97,7 +97,7 @@ fun detailedCard( card: Card?, gm: GameModel){
     }
     
     else{
-        androidx.compose.material3.Card() {
+        androidx.compose.material3.Card(modifier = detailedCardModifier) {
             Column(modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally) {
