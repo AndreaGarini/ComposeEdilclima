@@ -1,10 +1,8 @@
 package it.polito.did.compose.Components
 
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
@@ -20,18 +18,30 @@ import it.polito.did.compose.Screen.teamsInfoScreen
 @Composable
 fun MainScreenContent(navController: NavHostController, portraitOrientation : Boolean, gm : GameModel, padding : PaddingValues) {
 
-    BoxWithConstraints(modifier = Modifier
+    Column(modifier = Modifier
         .fillMaxSize()
-        .padding(bottom = padding.calculateBottomPadding())) {
-        NavHost(navController = navController, startDestination = "cardSelectionScreen") {
-            composable("cardSelectionScreen") {
-                cardSelectionScreen(navController = navController, portrait = portraitOrientation, gm, maxWidth, maxHeight)
-            }
-            composable("retriveCardScreen") {
-                retriveCardScreen(navController = navController, portrait = portraitOrientation, gm, maxWidth, maxHeight)
-            }
-            composable("teamsInfoScreen") {
-                teamsInfoScreen(navController = navController, portrait = portraitOrientation, gm, maxWidth, maxHeight)
+        .padding(bottom = padding.calculateBottomPadding()),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .weight(0.05f)){
+            infoRow(gm = gm)
+        }
+
+        BoxWithConstraints(modifier = Modifier
+            .fillMaxSize()
+            .weight(0.95f)) {
+            NavHost(navController = navController, startDestination = "cardSelectionScreen") {
+                composable("cardSelectionScreen") {
+                    cardSelectionScreen(navController = navController, portrait = portraitOrientation, gm, maxWidth, maxHeight)
+                }
+                composable("retriveCardScreen") {
+                    retriveCardScreen(navController = navController, portrait = portraitOrientation, gm, maxWidth, maxHeight)
+                }
+                composable("teamsInfoScreen") {
+                    teamsInfoScreen(navController = navController, portrait = portraitOrientation, gm, maxWidth, maxHeight)
+                }
             }
         }
     }

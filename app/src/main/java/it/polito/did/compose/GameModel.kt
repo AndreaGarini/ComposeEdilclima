@@ -46,7 +46,7 @@ class GameModel : ViewModel() {
     var ableToPLay : MutableLiveData<Boolean> = MutableLiveData(false)
     var team : String = "null"
     var level: MutableLiveData<Long> = MutableLiveData(0)
-    var bool : MutableLiveData<Boolean> = MutableLiveData(false)
+    var timerCountdown : MutableLiveData<Int?> = MutableLiveData(null)
 
     //todo: ovunque ci sia il test nei child di firebase devi inserire l'uid del master
 
@@ -279,11 +279,21 @@ class GameModel : ViewModel() {
              db.child("matches").child("test").child("players")
                 .child("1").child("team").get().addOnSuccessListener {
                     team = it.value.toString()
-                     db.child("matches").child("test").child(team).child("ableToPlay")
+                     db.child("matches").child("test").child("teams").child(team).child("ableToPlay")
                          .addValueEventListener(object : ValueEventListener{
                              override fun onDataChange(snapshot: DataSnapshot) {
                                  if (snapshot.value.toString().equals("1")){
-                                     //todo: fai partire il timer per il turno del player
+                                     ableToPLay.value = true
+                                     timerCountdown.value = 60
+                                     val onTick : () -> Unit = {
+                                         timerCountdown.value = timerCountdown.value as Int - 1
+                                     }
+                                     val onFinish : () -> Unit = {
+                                         ableToPLay.value = false
+                                         timerCountdown.value = null
+                                         setTimeOutTrue()
+                                     }
+                                     gameLogic.setPlayerTimer(10000, 1000, onTick, onFinish)
                                  }
                              }
 

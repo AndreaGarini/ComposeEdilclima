@@ -23,6 +23,7 @@ import com.google.accompanist.pager.rememberPagerState
 import it.polito.did.compose.GameModel
 import it.polito.did.compose.ui.theme.GameTheme
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -50,7 +51,8 @@ fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Uni
                   Tab(
                       text = { Text(title) },
                       selected = pagerState.currentPage == index,
-                      onClick = { //todo: utilizzare le coroutine per fare lo scrollToPage
+                      onClick = {
+                            //todo : coroutine per animare lo scroll
                            },
                   )
               }

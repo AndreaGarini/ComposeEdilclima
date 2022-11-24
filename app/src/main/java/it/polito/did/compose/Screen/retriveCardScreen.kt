@@ -37,17 +37,9 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
 
     val playedCards = gm.playedCardsPerTeam.observeAsState()
 
-    val stats = gm.teamsStats.observeAsState()
-
-    Log.d("stats in retrive cards:", stats.value!!.toString())
+    val ableToPlay = gm.ableToPLay.observeAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .weight(0.5f)){
-            infoRow(gm = gm)
-        }
 
         ScrollableTabRow(
             // Our selected tab is our current page
@@ -94,8 +86,8 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
         verticalAlignment = Alignment.CenterVertically, 
         horizontalArrangement = Arrangement.Center) {
             // todo: button enabled false se non c'è una carta
-            Button(onClick = { gm.retriveCardFromPos(pagerState.currentPage)
-           }) {
+            Button(onClick = { gm.retriveCardFromPos(pagerState.currentPage) },
+            enabled = (playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[pagerState.currentPage]) != null) && ableToPlay.value!!) {
                 Text(text = "retrive card")
             }
         }

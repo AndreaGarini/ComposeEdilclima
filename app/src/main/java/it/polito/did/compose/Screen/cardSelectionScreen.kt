@@ -47,6 +47,7 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
     var motionScene by remember {
        mutableStateOf( context.resources.openRawResource(R.raw.motion_scene).readBytes().decodeToString())
     }
+    
     var direction by remember {
         mutableStateOf(it.polito.did.compose.Screen.Direction.None)
     }
@@ -58,6 +59,8 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
     var cardPlayable by remember {
        mutableStateOf("null")
     }
+
+    val ableToPlay = gm.ableToPLay.observeAsState()
     val playerCards = gm.playerCards.observeAsState()
 
     val dragModifier : Modifier = Modifier
@@ -73,9 +76,11 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                     }
                 } else {
                     when {
-                        (y > 0 && direction == Direction.Up) -> { direction = Direction.Down
-                        cardPlayable = "null"}
-                        y < 0 -> direction = Direction.Up
+                        (y > 0  && direction == Direction.Up) -> {
+                            direction = Direction.Down
+                            cardPlayable = "null"
+                        }
+                        (y < 0 && ableToPlay.value!!) -> direction = Direction.Up
                     }
                 }
             }
@@ -84,6 +89,11 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
     val animateToStart = {
         direction = Direction.Down
         cardPlayable = "null"
+    }
+
+    //condizione per far tornare la carta Down se si finisce il tempo con la carta in Up
+    if(!ableToPlay.value!! && direction == Direction.Up){
+        animateToStart()
     }
 
     //todo : sistema l'animazione di Up in modo che resti solo la carta centrale
@@ -118,12 +128,6 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                 
                 Row(modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.5f)){
-                    infoRow(gm = gm)
-                }
-                
-                Row(modifier = Modifier
-                    .fillMaxWidth()
                     .weight(2f)){
                     cardCarousel(gm = gm, cardPlayable, animateToStart)
                 }
@@ -131,130 +135,132 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .weight(6f)) {
-                    when (direction) {
-                        Direction.None -> {
-                            MotionLayout(
-                                motionScene = MotionScene(content = motionScene),
-                                constraintSetName = "start",
-                                modifier = Modifier
-                                    .fillMaxSize()
 
-                            ) {
-                                Spacer(modifier = Modifier.layoutId("guide"))
+                        when {
+                            direction == Direction.None -> {
+                                MotionLayout(
+                                    motionScene = MotionScene(content = motionScene),
+                                    constraintSetName = "start",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+
+                                ) {
+                                    Spacer(modifier = Modifier.layoutId("guide"))
                                     for (i in 0 until 7) {
                                         undetailedCard(
                                             crd = playerCards.value!![(i + counter) % (playerCards.value!!.size)],
                                             motionSceneCode = i,
                                         )
                                     }
+                                }
                             }
-                        }
 
-                        Direction.Right -> {
-                            MotionLayout(
-                                motionScene = MotionScene(content = motionScene),
-                                constraintSetName = "shiftRight",
-                                animationSpec = tween(
-                                    1000,
-                                    easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
-                                ),
-                                finishedAnimationListener = {
+                            direction == Direction.Right -> {
+                                MotionLayout(
+                                    motionScene = MotionScene(content = motionScene),
+                                    constraintSetName = "shiftRight",
+                                    animationSpec = tween(
+                                        1000,
+                                        easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
+                                    ),
+                                    finishedAnimationListener = {
                                         if (counter == 0) counter = playerCards.value!!.size
                                         else counter--
 
-                                    direction = Direction.None
-                                },
-                                modifier = Modifier
-                                    .fillMaxSize()
+                                        direction = Direction.None
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxSize()
 
-                            ) {
-                                Spacer(modifier = Modifier.layoutId("guide"))
+                                ) {
+                                    Spacer(modifier = Modifier.layoutId("guide"))
                                     for (i in 0 until 7) {
                                         undetailedCard(
                                             crd = playerCards.value!![(i + counter) % playerCards.value!!.size],
                                             motionSceneCode = i,
                                         )
                                     }
+                                }
                             }
-                        }
-                        Direction.Left -> {
-                            MotionLayout(
-                                motionScene = MotionScene(content = motionScene),
-                                constraintSetName = "shiftLeft",
-                                animationSpec = tween(
-                                    1000,
-                                    easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
-                                ),
-                                finishedAnimationListener = {
-                                    counter++
+                            direction == Direction.Left -> {
+                                MotionLayout(
+                                    motionScene = MotionScene(content = motionScene),
+                                    constraintSetName = "shiftLeft",
+                                    animationSpec = tween(
+                                        1000,
+                                        easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
+                                    ),
+                                    finishedAnimationListener = {
+                                        counter++
 
-                                    direction = Direction.None
-                                },
-                                modifier = Modifier
-                                    .fillMaxSize()
+                                        direction = Direction.None
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxSize()
 
-                            ) {
-                                Spacer(modifier = Modifier.layoutId("guide"))
+                                ) {
+                                    Spacer(modifier = Modifier.layoutId("guide"))
                                     for (i in 0 until 7) {
                                         undetailedCard(
                                             crd = playerCards.value!![(i + counter) % playerCards.value!!.size],
                                             motionSceneCode = i,
                                         )
                                     }
+                                }
                             }
-                        }
-                        Direction.Up -> {
-                            MotionLayout(
-                                motionScene = MotionScene(content = motionScene),
-                                constraintSetName = "shiftUp",
-                                animationSpec = tween(
-                                    1000,
-                                    easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
-                                ),
-                                finishedAnimationListener = {
-                                    cardPlayable =
-                                        playerCards.value!![(3 + counter) % playerCards.value!!.size].code
-                                },
-                                modifier = Modifier
-                                    .fillMaxSize()
+                            direction == Direction.Up -> {
+                                MotionLayout(
+                                    motionScene = MotionScene(content = motionScene),
+                                    constraintSetName = "shiftUp",
+                                    animationSpec = tween(
+                                        1000,
+                                        easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
+                                    ),
+                                    finishedAnimationListener = {
+                                        cardPlayable =
+                                            playerCards.value!![(3 + counter) % playerCards.value!!.size].code
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxSize()
 
-                            ) {
-                                Spacer(modifier = Modifier.layoutId("guide"))
+                                ) {
+                                    Spacer(modifier = Modifier.layoutId("guide"))
                                     for (i in 0 until 7) {
                                         undetailedCard(
                                             crd = playerCards.value!![(i + counter) % playerCards.value!!.size],
                                             motionSceneCode = i,
                                         )
                                     }
+                                }
                             }
-                        }
-                        Direction.Down -> {
-                            //todo : scoprire perchè non anima qui
-                            MotionLayout(
-                                motionScene = MotionScene(content = motionScene),
-                                constraintSetName = "start",
-                                animationSpec = tween(
-                                    1000,
-                                    easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
-                                ),
-                                finishedAnimationListener = {
-                                    Log.d("finished animation listener in direction down", "")
-                                    direction = Direction.None
-                                    cardPlayable = "null"
-                                },
-                                modifier = Modifier
-                                    .fillMaxSize()
+                            direction == Direction.Down -> {
+                                Log.d("in down", "")
+                                //todo : scoprire perchè non anima qui
+                                MotionLayout(
+                                    motionScene = MotionScene(content = motionScene),
+                                    constraintSetName = "start",
+                                    animationSpec = tween(
+                                        1000,
+                                        easing = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
+                                    ),
+                                    finishedAnimationListener = {
+                                        Log.d("finished animation listener in direction down", "")
+                                        direction = Direction.None
+                                        cardPlayable = "null"
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxSize()
 
-                            ) {
-                                Spacer(modifier = Modifier.layoutId("guide"))
+                                ) {
+                                    Spacer(modifier = Modifier.layoutId("guide"))
                                     for (i in 0 until 7) {
                                         undetailedCard(
                                             crd = playerCards.value!![(i + counter) % playerCards.value!!.size],
                                             motionSceneCode = i,
                                         )
                                     }
+                                }
                             }
-                        }
                     }
                 }
             }
@@ -272,4 +278,7 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
 
 enum class Direction {
 Right, Left, Up, Down, None
+}
+
+data class screenState( var cardPlayable : String, var counter : Int, var direction : Direction) {
 }

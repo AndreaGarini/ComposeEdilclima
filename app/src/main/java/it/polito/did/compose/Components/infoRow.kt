@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import it.polito.did.compose.GameModel
@@ -13,9 +14,8 @@ import it.polito.did.compose.GameModel
 @Composable
 fun infoRow(gm : GameModel){
 
+    var timeCounter = gm.timerCountdown.observeAsState()
     val stats = gm.teamsStats.observeAsState()
-
-    Log.d("stats in info row :", stats.value!!.toString())
 
     Row(modifier = Modifier.fillMaxSize(),
     verticalAlignment = Alignment.CenterVertically,
@@ -29,13 +29,16 @@ fun infoRow(gm : GameModel){
         Column(modifier = Modifier
             .fillMaxHeight()
             .weight(1f)) {
-             Text(text = "B: ${stats.value!!.get(gm.team)!!.budget}") //todo: togli i non null asserted e fai i null check perchè crasha alle volte
+             Text(text = "B: ${stats.value?.get(gm.team)?.budget}")
         }
 
         Column(modifier = Modifier
             .fillMaxHeight()
             .weight(1f)) {
-                //todo : timer qui
+                if (timeCounter==null){
+                    //todo : animazione di attesa turno del timer (tipo loading)
+                }
+                else Text(text = "${timeCounter.value}")
         }
     }
 }

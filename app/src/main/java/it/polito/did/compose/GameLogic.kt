@@ -1,5 +1,6 @@
 package it.polito.did.compose
 
+import android.os.CountDownTimer
 import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -101,6 +102,19 @@ class GameLogic(scope: CoroutineScope) {
 
             }
         }
+    }
+
+    fun setPlayerTimer(timeToFinish : Long, tickInterval : Long, onTick: () -> Unit, onFinish : () -> Unit) {
+        val timer: CountDownTimer = object :  CountDownTimer(timeToFinish, tickInterval) {
+            override fun onTick(millisUntilFinished: Long) {
+                    onTick()
+            }
+
+            override fun onFinish() {
+                    onFinish()
+            }
+        }
+        timer.start()
     }
 
     fun selectTeamForPlayers (snapshot: DataSnapshot) : MutableMap<String, Map<String, String>> {

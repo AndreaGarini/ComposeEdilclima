@@ -27,6 +27,8 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
         mutableStateOf(pushResult.CardDown)
     }
 
+    val ableToPlay = gm.ableToPLay.observeAsState()
+
     val onClick : () -> Unit = {
         //todo : fai un check sul timer per sapere se il giocatore può giocare
         //todo: se il timer va a 0 metti pushing a false
@@ -59,7 +61,7 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
                     .fillMaxWidth()
                     .weight(1f)){
                     Button(onClick = onClick,
-                        enabled = playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index]) == null) {
+                        enabled = playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index]) == null && ableToPlay.value!!) {
                         Text(text = "play card")
                     }
                 }
@@ -69,6 +71,7 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center){
                     when {
+                        !ableToPlay.value!! -> Text(text = "attendi il tuo turno")
                         push == pushResult.InvalidCard -> Text(text = "carta non valida")
                         push == pushResult.CardDown || cardPlayable.equals("null") -> Text(text = "swipe up per selezionare")
                         push == pushResult.LowBudget -> Text(text = "budget esaurito")
