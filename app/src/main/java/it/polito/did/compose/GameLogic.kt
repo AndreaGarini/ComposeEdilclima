@@ -17,7 +17,7 @@ class GameLogic(scope: CoroutineScope) {
 
     //todo : aggiungere tutta la logica per il calcolo dei punti
     //todo: definire un comportamento che ti impedisca di giocare se una ricerca è needed e non l'hai giocata
-    //todo: implementare il timer
+    //todo: implementare il timer di livello
 
     val firebaseAuth = Firebase.auth
 
@@ -27,10 +27,11 @@ class GameLogic(scope: CoroutineScope) {
 
     val months: List<String > = listOf("gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic")
 
+    //todo : aggiungi la logica per poter giocare in meno di 4, per ora hai 4 team di default
     val zoneMap: Map<Int, Zone> = mapOf(
         1 to Zone(1, 50, 190, 280, 350, 200, 80, 50,
             listOf("H01", "H02", "H04", "H06", "E10", "E11", "E13", "E07", "E12", "A08", "A09","A12" ),
-            listOf("H01", "E04", "A04", "E07")
+            listOf("H01", "E04", "A04", "E07", "no card")
         ))
     val cardsList : List<Card> = listOf(
         //ministero ambiente
@@ -162,6 +163,7 @@ class GameLogic(scope: CoroutineScope) {
                 avatarMap.get(avatarMap.keys.toList()[playersNum])!!.add(startingSetCards[counterCrds])
                 counterCrds++
             }
+            avatarMap.entries.forEach { a -> a.value.add("void") }
             resultingMap.putAll( avatarMap.mapValues { a -> a.value.
             stream().collect(Collectors.toMap({ b -> b }, {c -> true})) })
         }

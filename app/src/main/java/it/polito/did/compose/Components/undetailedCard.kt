@@ -84,14 +84,3 @@ fun undetailedCard(crd : Card, motionSceneCode : Int) {
             }
         }
 }
-
-@Preview
-@Composable
-fun previewUndetailedCard(){
-
-    val crd : Card =   Card("A02", -120, 0, -30, 0, Card.researchSet.Needed,2)
-
-    GameTheme() {
-        undetailedCard(crd = crd, 1)
-    }
-}

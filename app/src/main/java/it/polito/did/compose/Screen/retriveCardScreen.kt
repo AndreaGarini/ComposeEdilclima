@@ -21,7 +21,6 @@ import com.google.accompanist.pager.*
 import it.polito.did.compose.Components.detailedCard
 import it.polito.did.compose.Components.infoRow
 import it.polito.did.compose.Components.pagerCard
-import it.polito.did.compose.Components.pagerInfoCard
 import it.polito.did.compose.DataClasses.Card
 import it.polito.did.compose.GameModel
 import kotlinx.coroutines.launch

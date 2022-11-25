@@ -119,8 +119,14 @@ class GameModel : ViewModel() {
                     fun setStartingCardsPerLevel(level : Int){
 
                         val startingCardMap : Map<String, String> = gameLogic.zoneMap.get(level)!!.startingList.stream()
-                            .collect(Collectors.toMap({a -> gameLogic.months[gameLogic.zoneMap.get(level)!!.startingList.indexOf(a)]}, {b -> b}))
+                            .collect(Collectors.toMap({a ->
+                                if (a.equals("no card"))
+                                    "void"
+                                else
+                                    gameLogic.months[gameLogic.zoneMap.get(level)!!.startingList.indexOf(a)]
+                                                      }, {b -> b}))
 
+                        val startingCardscount : Int = gameLogic.zoneMap.get(level)!!.startingList.count()
                         var startingCardsServed : Int = 0
                         for (team in gameLogic.playersPerTeam.keys){
 
@@ -128,6 +134,7 @@ class GameModel : ViewModel() {
                                 .child("playedCards").setValue(startingCardMap).addOnFailureListener {
                                     // failure
                                 }.addOnCompleteListener { startingCardsServed ++
+                                    //todo: fai in modo che ci sia un modo per contare i team se sono meno di 4 giocatori
                                     if (startingCardsServed==4) {
                                         addPlayedCardsListener()
                                         addTeamTimeOutListener()
@@ -145,6 +152,7 @@ class GameModel : ViewModel() {
                                        override fun onDataChange(snapshot: DataSnapshot) {
                                            var map: MutableMap<String, String> = mutableMapOf()
                                            for (playedCard in snapshot.children){
+                                               if (!playedCard.value.toString().equals("no card"))
                                                map.put(playedCard.key.toString(), playedCard.value.toString())
                                            }
                                            newStatsPerTeam(team, map)
