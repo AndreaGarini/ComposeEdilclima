@@ -14,7 +14,7 @@ import it.polito.did.compose.GameModel
 @Composable
 fun infoRow(gm : GameModel){
 
-    var timeCounter = gm.timerCountdown.observeAsState()
+    var timeCounter = gm.playerTimerCountdown.observeAsState()
     val stats = gm.teamsStats.observeAsState()
 
     Row(modifier = Modifier.fillMaxSize(),

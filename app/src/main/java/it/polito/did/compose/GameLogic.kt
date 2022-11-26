@@ -118,6 +118,21 @@ class GameLogic(scope: CoroutineScope) {
         timer.start()
     }
 
+    fun setLevelTimer (onTick: () -> Unit, onFinish : () -> Unit) {
+        val timer: CountDownTimer = object :  CountDownTimer(420000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                onTick()
+            }
+
+            override fun onFinish() {
+                onFinish()
+            }
+        }
+        timer.start()
+    }
+
+
+
     fun selectTeamForPlayers (snapshot: DataSnapshot) : MutableMap<String, Map<String, String>> {
         val resultingMap : MutableMap<String, Map<String, String>> = mutableMapOf()
         var counter : Int = 0

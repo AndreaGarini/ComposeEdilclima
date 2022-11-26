@@ -52,7 +52,8 @@ fun matchMakingScreen (navController: NavController, portrait: Boolean, gm: Game
             ) {
                 Button(
                     onClick = {
-                        gm.startMatch(1)
+                       navController.navigate("gameBoardScreen")
+
                     }
                 ) {
                     Text(text = "start match")

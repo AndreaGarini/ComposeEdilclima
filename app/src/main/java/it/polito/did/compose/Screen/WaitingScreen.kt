@@ -27,10 +27,13 @@ fun WaitingScreen(portraitOrientation: Boolean, gm: GameModel){
                 initialScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
             }
             composable("MainScreen") {
-                MainScreen(portraitOrientation, gm)
+                MainScreenPlayer(portraitOrientation, gm)
             }
             composable("matchMakingScreen") {
                 matchMakingScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
+            }
+            composable("gameBoardScreen") {
+                gameBoardScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
             }
             composable("cameraScreen") {
                 cameraScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)

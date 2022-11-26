@@ -32,6 +32,8 @@ class GameModel : ViewModel() {
     var playerCounter: MutableLiveData<Int> = MutableLiveData()
 
     val startMatch : MutableLiveData<Boolean> = MutableLiveData(false)
+    val ongoingLevel : MutableLiveData<Boolean> = MutableLiveData(false)
+    var levelTimerCountdown : MutableLiveData<Int?> = MutableLiveData(null)
 
     var playedCardsPerTeam : MutableLiveData<Map<String, Map<String, String>?>> = MutableLiveData(
         mutableMapOf("team1" to null, "team2" to null, "team3" to null, "team4" to null)
@@ -46,7 +48,7 @@ class GameModel : ViewModel() {
     var ableToPLay : MutableLiveData<Boolean> = MutableLiveData(false)
     var team : String = "null"
     var level: MutableLiveData<Long> = MutableLiveData(0)
-    var timerCountdown : MutableLiveData<Int?> = MutableLiveData(null)
+    var playerTimerCountdown : MutableLiveData<Int?> = MutableLiveData(null)
 
     //todo: ovunque ci sia il test nei child di firebase devi inserire l'uid del master
 
@@ -126,7 +128,6 @@ class GameModel : ViewModel() {
                                     gameLogic.months[gameLogic.zoneMap.get(level)!!.startingList.indexOf(a)]
                                                       }, {b -> b}))
 
-                        val startingCardscount : Int = gameLogic.zoneMap.get(level)!!.startingList.count()
                         var startingCardsServed : Int = 0
                         for (team in gameLogic.playersPerTeam.keys){
 
@@ -150,7 +151,7 @@ class GameModel : ViewModel() {
                                db.child("matches").child("test").child("teams").child(team).child("playedCards")
                                    .addValueEventListener(object : ValueEventListener{
                                        override fun onDataChange(snapshot: DataSnapshot) {
-                                           var map: MutableMap<String, String> = mutableMapOf()
+                                           val map: MutableMap<String, String> = mutableMapOf()
                                            for (playedCard in snapshot.children){
                                                if (!playedCard.value.toString().equals("no card"))
                                                map.put(playedCard.key.toString(), playedCard.value.toString())
@@ -198,12 +199,26 @@ class GameModel : ViewModel() {
                                 } //chiamata in addTeamTimeOutListener
 
 
-    fun startMatch(level : Int){
-        db.child("matches").child("test").child("level").setValue(level)
+    fun startLevel(level : Int){
+
+        levelTimerCountdown.value = 420
+        val onTick : () -> Unit ={
+            levelTimerCountdown.value = levelTimerCountdown.value!! - 1
+        }
+
+        val onFinish : () -> Unit ={
+              levelTimerCountdown.value = null
+              //todo: cosa succede quando il livello finisce?
+        }
+
+        db.child("matches").child("test").child("level").setValue(level).addOnSuccessListener {
+            ongoingLevel.value = true
+            gameLogic.setLevelTimer(onTick, onFinish)
+        }
     }
 
     fun newStatsPerTeam(team :String, map: MutableMap<String, String>){
-        var avatarMap : MutableMap<String, TeamInfo?> = teamsStats.value!!.toMutableMap()
+        val avatarMap : MutableMap<String, TeamInfo?> = teamsStats.value!!.toMutableMap()
         val budget =
             gameLogic.zoneMap.get(level.value!!.toInt())?.budget?.plus(
                 map.values.map { a -> gameLogic.cardsMap.get(a)!!.money }.toList().sum()
@@ -262,7 +277,7 @@ class GameModel : ViewModel() {
             db.child("matches").child("test").child("players").child("1").child("ownedCards")
                 .addValueEventListener(object: ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var list : MutableList<Card> = mutableListOf()
+                    val list : MutableList<Card> = mutableListOf()
                     for (card in snapshot.children){
                         val crd = gameLogic.findCard(card.key!!)
                         if(crd!=null)
@@ -292,13 +307,13 @@ class GameModel : ViewModel() {
                              override fun onDataChange(snapshot: DataSnapshot) {
                                  if (snapshot.value.toString().equals("1")){
                                      ableToPLay.value = true
-                                     timerCountdown.value = 60
+                                     playerTimerCountdown.value = 60
                                      val onTick : () -> Unit = {
-                                         timerCountdown.value = timerCountdown.value as Int - 1
+                                         playerTimerCountdown.value = playerTimerCountdown.value as Int - 1
                                      }
                                      val onFinish : () -> Unit = {
                                          ableToPLay.value = false
-                                         timerCountdown.value = null
+                                         playerTimerCountdown.value = null
                                          setTimeOutTrue()
                                      }
                                      gameLogic.setPlayerTimer(10000, 1000, onTick, onFinish)
@@ -357,8 +372,7 @@ class GameModel : ViewModel() {
 
     fun getBudgetSnapshot (playedCards : List<String>?) : Int{
         if(playedCards!=null && gameLogic.zoneMap.get(level.value!!.toInt())?.budget!=null)
-        { return gameLogic.zoneMap.get(level.value!!.toInt())!!.budget
-                    - playedCards.map { a -> gameLogic.cardsMap.get(a)!!.money }.sum()
+        { return (gameLogic.zoneMap.get(level.value!!.toInt())!!.budget - playedCards.map { a -> gameLogic.cardsMap.get(a)!!.money }.sum())
         }
         else return 0
 
