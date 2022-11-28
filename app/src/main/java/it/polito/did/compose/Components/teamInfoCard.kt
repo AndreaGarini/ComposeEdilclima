@@ -67,7 +67,7 @@ fun teamInfoCard(entry : Map.Entry<String, TeamInfo?>){
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = "Energy : ${entry.value?.smog}")
+                                Text(text = "Energy : ${entry.value?.energy}")
                             }
                             Row(
                                 modifier = Modifier
@@ -76,7 +76,7 @@ fun teamInfoCard(entry : Map.Entry<String, TeamInfo?>){
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = "Comfort : ${entry.value?.smog}")
+                                Text(text = "Comfort : ${entry.value?.comfort}")
                             }
                         }
                         Column(

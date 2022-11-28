@@ -159,8 +159,8 @@ class GameModel : ViewModel() {
                                        override fun onDataChange(snapshot: DataSnapshot) {
                                            val map: MutableMap<String, String> = mutableMapOf()
                                            for (playedCard in snapshot.children){
-                                               if (!playedCard.value.toString().equals("no card"))
-                                               map.put(playedCard.key.toString(), playedCard.value.toString())
+                                                   if (!playedCard.value.toString().equals("no card"))
+                                                   map.put(playedCard.key.toString(), playedCard.value.toString())
                                            }
                                            newStatsPerTeam(team, map)
                                            avatarMap = playedCardsPerTeam.value!!.toMutableMap()
@@ -325,7 +325,7 @@ class GameModel : ViewModel() {
                                          playerTimerCountdown.value = null
                                          setTimeOutTrue()
                                      }
-                                     gameLogic.setPlayerTimer(60000, 1000, onTick, onFinish)
+                                     gameLogic.setPlayerTimer(62000, 1000, onTick, onFinish)
                                  }
                              }
 

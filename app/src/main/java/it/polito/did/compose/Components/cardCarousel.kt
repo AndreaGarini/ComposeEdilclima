@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
@@ -12,11 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.core.math.MathUtils
@@ -32,16 +35,15 @@ import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Unit){
+fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Unit, usableWidth : Dp){
 
       val pagerState = rememberPagerState()
       val coroutineScope = rememberCoroutineScope()
 
       Column(modifier = Modifier.fillMaxSize()) {
           ScrollableTabRow(
-              // Our selected tab is our current page
               selectedTabIndex = pagerState.currentPage,
-              // Override the indicator, using the provided pagerTabIndicatorOffset modifier
+              edgePadding = 0.dp,
               indicator = { tabPositions ->
                   TabRowDefaults.Indicator(
                       Modifier
@@ -56,6 +58,7 @@ fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Uni
               // Add tabs for all of our pages
               gm.gameLogic.months.forEachIndexed { index, title ->
                   Tab(
+                      modifier = Modifier.width(usableWidth.times(0.25f)),
                       text = { Text(title) },
                       selected = pagerState.currentPage == index,
                       onClick = {

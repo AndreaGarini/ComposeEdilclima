@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.*
 import it.polito.did.compose.Components.detailedCard
@@ -43,9 +44,8 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
     Column(modifier = Modifier.fillMaxSize()) {
 
         ScrollableTabRow(
-            // Our selected tab is our current page
             selectedTabIndex = pagerState.currentPage,
-            // Override the indicator, using the provided pagerTabIndicatorOffset modifier
+            edgePadding = 0.dp,
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     Modifier
@@ -60,6 +60,7 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
             // Add tabs for all of our pages
             gm.gameLogic.months.forEachIndexed { index, title ->
                 Tab(
+                    modifier = Modifier.width(usableWidth.times(0.25f)),
                     text = { Text(title) },
                     selected = pagerState.currentPage == index,
                     onClick = { coroutineScope.launch {
@@ -73,7 +74,7 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
         HorizontalPager(
             count = gm.gameLogic.months.size,
             state = pagerState,
-            modifier = Modifier.weight(5f)
+            modifier = Modifier.weight(9f)
         ) { index ->
                     val detailedCardModifier = Modifier.
                     graphicsLayer {

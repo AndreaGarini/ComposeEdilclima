@@ -132,7 +132,7 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .weight(2f)){
-                    cardCarousel(gm = gm, cardPlayable, animateToStart)
+                    cardCarousel(gm = gm, cardPlayable, animateToStart, usableWidth)
                 }
 
                 Row(modifier = Modifier
