@@ -32,6 +32,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import it.polito.did.compose.Components.*
+import it.polito.did.compose.Components.pushResult
 import it.polito.did.compose.DataClasses.Card
 import it.polito.did.compose.GameModel
 import it.polito.did.compose.R

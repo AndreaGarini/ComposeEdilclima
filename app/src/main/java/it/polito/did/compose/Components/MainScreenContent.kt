@@ -1,7 +1,9 @@
 package it.polito.did.compose.Components
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -18,6 +20,8 @@ import it.polito.did.compose.Screen.teamsInfoScreen
 @Composable
 fun MainScreenContent(navController: NavHostController, portraitOrientation : Boolean, gm : GameModel, padding : PaddingValues) {
 
+    val pushResult = gm.pushResult.observeAsState()
+
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(bottom = padding.calculateBottomPadding()),
@@ -26,7 +30,7 @@ fun MainScreenContent(navController: NavHostController, portraitOrientation : Bo
         Row(modifier = Modifier
             .fillMaxWidth()
             .weight(0.05f)){
-            infoRow(gm = gm)
+            infoRow(gm = gm, pushResult.value!!)
         }
 
         BoxWithConstraints(modifier = Modifier

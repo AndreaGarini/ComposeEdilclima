@@ -34,10 +34,13 @@ fun cameraScreen (navController: NavController, portrait: Boolean, gm: GameModel
         }
     }
 
+    //todo: fai in modo che start match del master scriva 1prepared anzichè uno e i giocatori possano passare alla schermata di gioco senza che parta il timer
+    //il timer parte quando il master preme start level 1
+
     if (level.value == 1L) {
         LaunchedEffect(key1 = Unit, block = {
             //todo: qui aggiungi un delay con la schermata di splash, in modo che i listener abbiano il tempo di settarsi
-            //todo: fai un test senza connessione, per vedere se almeno non si rompe anche sesnza dati
+            //todo: fai un test senza connessione, per vedere se almeno non si rompe anche senza dati
             gm.playerReadyToPlay()
             navController.navigate("MainScreen")
         })

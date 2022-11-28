@@ -112,6 +112,7 @@ class GameLogic(scope: CoroutineScope) {
             }
 
             override fun onFinish() {
+                    //todo : il timer lavora anche se il player ha già giocato una carta
                     onFinish()
             }
         }
@@ -188,10 +189,14 @@ class GameLogic(scope: CoroutineScope) {
     }
 
     fun findNextPlayer(team : String, lastPlayer: String) : String{
+        //todo : controlla che effettivamete parta dal primo in lista per ogni squadra
 
-       var oldIndex = if(lastPlayer.equals("")) -1 else playersPerTeam.get(team)!!.indexOf(lastPlayer)
+       var oldIndex = if(lastPlayer.equals("") || lastPlayer.equals(playersPerTeam.get(team)!![playersPerTeam.get(team)!!.size - 1])) -1
+       else playersPerTeam.get(team)!!.indexOf(lastPlayer)
+
        if (oldIndex == playersPerTeam.get(team)!!.size) oldIndex = -1
 
+        Log.d("next player in gameLogic : ",  playersPerTeam.get(team)!![oldIndex + 1])
         return playersPerTeam.get(team)!![oldIndex + 1]
     }
 

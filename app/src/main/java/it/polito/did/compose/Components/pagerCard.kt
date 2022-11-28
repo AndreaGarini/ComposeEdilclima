@@ -32,7 +32,9 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
     val onClick : () -> Unit = {
         //todo : fai un check sul timer per sapere se il giocatore può giocare
         //todo: se il timer va a 0 metti pushing a false
-        push =
+
+        Log.d("onClick working", "")
+        gm.pushResult.value =
             when {
                 cardPlayable.equals("null") -> pushResult.CardDown
                 cardPlayable.equals("void") -> pushResult.InvalidCard
@@ -43,7 +45,7 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
                         animateToStart()
                         pushResult.CardDown
                     }
-                    else push = pushResult.LowBudget
+                    else gm.pushResult.value = pushResult.LowBudget
                 }
             }
     }
@@ -55,39 +57,9 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
             .weight(1f),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-
-            if (playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index]) == null){
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)){
-                    Button(onClick = onClick,
-                        enabled = playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index]) == null && ableToPlay.value!!) {
-                        Text(text = "play card")
-                    }
-                }
-                Row (modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center){
-                    when {
-                        !ableToPlay.value!! -> Text(text = "attendi il tuo turno")
-                        push == pushResult.InvalidCard -> Text(text = "carta non valida")
-                        push == pushResult.CardDown || cardPlayable.equals("null") -> Text(text = "swipe up per selezionare")
-                        push == pushResult.LowBudget -> Text(text = "budget esaurito")
-                    }
-
-                }
-            }
-            else {
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)){
-                    Button(onClick = onClick,
-                        enabled = playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index]) == null) {
-                        Text(text = "play card")
-                    }
-                }
+            Button(onClick = onClick,
+                enabled = playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index]) == null && ableToPlay.value!!) {
+                Text(text = "play card")
             }
         }
         Column(modifier = Modifier

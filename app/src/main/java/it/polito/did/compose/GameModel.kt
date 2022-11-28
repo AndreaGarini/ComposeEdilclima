@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import it.polito.did.compose.Components.pushResult
 import it.polito.did.compose.DataClasses.Card
 import it.polito.did.compose.DataClasses.TeamInfo
 import java.util.stream.Collectors
@@ -43,12 +44,17 @@ class GameModel : ViewModel() {
         mutableMapOf("team1" to null, "team2" to null, "team3" to null, "team4" to null)
     )
 
+    var ableToPlayPerTeam : MutableLiveData<MutableMap<String, String>> = MutableLiveData(
+        mutableMapOf("team1" to "", "team2" to "", "team3" to "", "team4" to "" )
+    )
+
     // variabili lato player
     var playerCards : MutableLiveData<MutableList<Card>> = MutableLiveData<MutableList<Card>>()
     var ableToPLay : MutableLiveData<Boolean> = MutableLiveData(false)
     var team : String = "null"
     var level: MutableLiveData<Long> = MutableLiveData(0)
     var playerTimerCountdown : MutableLiveData<Int?> = MutableLiveData(null)
+    var pushResult : MutableLiveData<pushResult> = MutableLiveData(it.polito.did.compose.Components.pushResult.CardDown)
 
     //todo: ovunque ci sia il test nei child di firebase devi inserire l'uid del master
 
@@ -179,7 +185,8 @@ class GameModel : ViewModel() {
                                             for (team in snapshot.children){
                                                 if (team.child("ableToPlay").value == "")
                                                 {
-                                                   val newPLayer: String = gameLogic.findNextPlayer(team.key!!, team.child("ableToPlay").value.toString())
+                                                    val newPLayer: String = gameLogic.findNextPlayer(team.key!!, ableToPlayPerTeam.value!!.get(team.key)!!)
+                                                    ableToPlayPerTeam.value!!.replace(team.key!!, newPLayer)
                                                     setPlayerAbleToPLay(newPLayer, team.key.toString())
                                                 }
                                             }
@@ -200,6 +207,8 @@ class GameModel : ViewModel() {
 
 
     fun startLevel(level : Int){
+
+        //todo: fare in modo che il counter non del player non parta se non è stato fatto partire l livello lato master
 
         levelTimerCountdown.value = 420
         val onTick : () -> Unit ={
@@ -307,7 +316,7 @@ class GameModel : ViewModel() {
                              override fun onDataChange(snapshot: DataSnapshot) {
                                  if (snapshot.value.toString().equals("1")){
                                      ableToPLay.value = true
-                                     playerTimerCountdown.value = 60
+                                     playerTimerCountdown.value = 62
                                      val onTick : () -> Unit = {
                                          playerTimerCountdown.value = playerTimerCountdown.value as Int - 1
                                      }
@@ -316,7 +325,7 @@ class GameModel : ViewModel() {
                                          playerTimerCountdown.value = null
                                          setTimeOutTrue()
                                      }
-                                     gameLogic.setPlayerTimer(10000, 1000, onTick, onFinish)
+                                     gameLogic.setPlayerTimer(60000, 1000, onTick, onFinish)
                                  }
                              }
 

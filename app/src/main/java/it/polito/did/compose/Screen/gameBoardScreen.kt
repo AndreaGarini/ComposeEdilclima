@@ -88,12 +88,9 @@ fun gameBoardScreen(navController: NavController, portraitOrientation : Boolean 
                     .width(maxWidth.times(0.11f))
                     .height(maxWidth.times(0.11f)).clip(CircleShape)
                     .background(Color.White),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Column(modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                        gameBoardInfoCircle(gm = gm, maxWidth = maxWidth, maxHeight = maxHeight)
-                    }
+                        gameBoardInfoCircle(gm = gm, circleWidth = maxWidth.times(0.10f), circleHeight = maxWidth.times(0.10f))
                 }
         }
     }
