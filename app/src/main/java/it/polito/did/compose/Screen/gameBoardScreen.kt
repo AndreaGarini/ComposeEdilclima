@@ -51,7 +51,7 @@ fun gameBoardScreen(navController: NavController, portraitOrientation : Boolean 
                                     vertical = maxHeight.times(0.01f)
                                 )
                         ) {
-                            gameBoardCard()
+                            gameBoardCard(gm, playedCardsPerTeam.value!!.keys.toList()[teamsRowIndex.times(2)])
                         }
                     } else {
                         Card(
@@ -63,7 +63,7 @@ fun gameBoardScreen(navController: NavController, portraitOrientation : Boolean 
                                     vertical = maxHeight.times(0.01f)
                                 )
                         ) {
-                            gameBoardCard()
+                            gameBoardCard(gm, playedCardsPerTeam.value!!.keys.toList()[teamsRowIndex.times(2)])
                         }
                         Card(
                             modifier = Modifier
@@ -74,7 +74,7 @@ fun gameBoardScreen(navController: NavController, portraitOrientation : Boolean 
                                     vertical = maxHeight.times(0.01f)
                                 )
                         ) {
-                            gameBoardCard()
+                            gameBoardCard(gm, playedCardsPerTeam.value!!.keys.toList()[teamsRowIndex.times(2) + 1])
                         }
                     }
                 }

@@ -21,7 +21,7 @@ class GameLogic(scope: CoroutineScope) {
 
     val firebaseAuth = Firebase.auth
 
-    var level : Int = 0
+    var masterLevelCounter : Int = 0
 
     var playersPerTeam : Map<String, List<String>> = mutableMapOf()
 
@@ -201,8 +201,8 @@ class GameLogic(scope: CoroutineScope) {
     }
 
     fun nextLevel() : Int{
-        level++
-        return level
+        masterLevelCounter++
+        return masterLevelCounter
     }
 
     fun findCard(cardCode : String) : Card?{

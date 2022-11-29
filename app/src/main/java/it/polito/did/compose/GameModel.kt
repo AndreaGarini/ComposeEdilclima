@@ -52,7 +52,7 @@ class GameModel : ViewModel() {
     var playerCards : MutableLiveData<MutableList<Card>> = MutableLiveData<MutableList<Card>>()
     var ableToPLay : MutableLiveData<Boolean> = MutableLiveData(false)
     var team : String = "null"
-    var level: MutableLiveData<Long> = MutableLiveData(0)
+    var playerLevelCounter: MutableLiveData<Long> = MutableLiveData(0)
     var playerTimerCountdown : MutableLiveData<Int?> = MutableLiveData(null)
     var pushResult : MutableLiveData<pushResult> = MutableLiveData(it.polito.did.compose.Components.pushResult.CardDown)
 
@@ -159,8 +159,8 @@ class GameModel : ViewModel() {
                                        override fun onDataChange(snapshot: DataSnapshot) {
                                            val map: MutableMap<String, String> = mutableMapOf()
                                            for (playedCard in snapshot.children){
-                                                   if (!playedCard.value.toString().equals("no card"))
-                                                   map.put(playedCard.key.toString(), playedCard.value.toString())
+                                               if (!playedCard.value.toString().equals("no card"))
+                                               map.put(playedCard.key.toString(), playedCard.value.toString())
                                            }
                                            newStatsPerTeam(team, map)
                                            avatarMap = playedCardsPerTeam.value!!.toMutableMap()
@@ -228,21 +228,25 @@ class GameModel : ViewModel() {
 
     fun newStatsPerTeam(team :String, map: MutableMap<String, String>){
         val avatarMap : MutableMap<String, TeamInfo?> = teamsStats.value!!.toMutableMap()
+
+        val lv : Int = if (playerLevelCounter.value!!.toInt()==0) gameLogic.masterLevelCounter else playerLevelCounter.value!!.toInt()
+
         val budget =
-            gameLogic.zoneMap.get(level.value!!.toInt())?.budget?.plus(
+            gameLogic.zoneMap.get(lv)?.budget?.plus(
                 map.values.map { a -> gameLogic.cardsMap.get(a)!!.money }.toList().sum()
             )
-        val energy = gameLogic.zoneMap.get(level.value!!.toInt())?.initEnergy?.plus(
-            map.values.map { a -> gameLogic.cardsMap.get(a)!!.money }.toList().sum()
+        val energy = gameLogic.zoneMap.get(lv)?.initEnergy?.plus(
+            map.values.map { a -> gameLogic.cardsMap.get(a)!!.energy }.toList().sum()
         )
-        val smog = gameLogic.zoneMap.get(level.value!!.toInt())?.initSmog?.plus(
-            map.values.map { a -> gameLogic.cardsMap.get(a)!!.money }.toList().sum()
+        val smog = gameLogic.zoneMap.get(lv)?.initSmog?.plus(
+            map.values.map { a -> gameLogic.cardsMap.get(a)!!.smog }.toList().sum()
         )
-        val comfort = gameLogic.zoneMap.get(level.value!!.toInt())?.budget?.minus(
-            map.values.map { a -> gameLogic.cardsMap.get(a)!!.money }.toList().sum()
+        val comfort = gameLogic.zoneMap.get(lv)?.initComfort?.plus(
+            map.values.map { a -> gameLogic.cardsMap.get(a)!!.comfort }.toList().sum()
         )
         avatarMap.remove(team)
         avatarMap.put(team, TeamInfo(budget, smog, energy, comfort))
+        Log.d("avatar map in newStatsPerTeam : ", avatarMap.get("team1")!!.smog.toString())
         teamsStats.value = avatarMap
 
     } //chiamata in addPlayedCardsListener
@@ -265,7 +269,7 @@ class GameModel : ViewModel() {
         db.child("matches").child("test").child("level")
             .addValueEventListener(object: ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if(!snapshot.value!!.equals("")) level.value = snapshot.value as Long
+                    if(!snapshot.value!!.equals("")) playerLevelCounter.value = snapshot.value as Long
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -380,8 +384,8 @@ class GameModel : ViewModel() {
     }
 
     fun getBudgetSnapshot (playedCards : List<String>?) : Int{
-        if(playedCards!=null && gameLogic.zoneMap.get(level.value!!.toInt())?.budget!=null)
-        { return (gameLogic.zoneMap.get(level.value!!.toInt())!!.budget - playedCards.map { a -> gameLogic.cardsMap.get(a)!!.money }.sum())
+        if(playedCards!=null && gameLogic.zoneMap.get(playerLevelCounter.value!!.toInt())?.budget!=null)
+        { return (gameLogic.zoneMap.get(playerLevelCounter.value!!.toInt())!!.budget - playedCards.map { a -> gameLogic.cardsMap.get(a)!!.money }.sum())
         }
         else return 0
 

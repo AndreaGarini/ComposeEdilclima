@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
+import it.polito.did.compose.DataClasses.GreenHSV
+import it.polito.did.compose.DataClasses.RedHSV
 import it.polito.did.compose.GameModel
 import java.math.MathContext
 import java.math.RoundingMode
@@ -36,11 +38,11 @@ fun gameBoardInfoCircle(gm : GameModel, circleWidth : Dp, circleHeight : Dp){
         //todo: aggiungere curva timer centrale per il livello (da animare)
     }
     else{
-            Button(onClick = { gm.startLevel(gm.gameLogic.level) }, shape = CircleShape,
+            Button(onClick = { gm.startLevel(gm.gameLogic.masterLevelCounter) }, shape = CircleShape,
                 modifier = Modifier
                     .height(IntrinsicSize.Max)
                     .width(IntrinsicSize.Max)) {
-                Text(text = "start level ${gm.gameLogic.level}")
+                Text(text = "start level ${gm.gameLogic.masterLevelCounter}")
             }
     }
 }
@@ -64,16 +66,4 @@ fun generateColor (levelTimer : Float) : List<Float>{
     return listOf(RedHSV.hue + (hueRange * (levelTimer/420f)),
         (RedHSV.sat + (satRange * (levelTimer/420f)))/100f,
         (RedHSV.valu + (valueRange * (levelTimer/420f)))/100f)
-}
-
-object GreenHSV{
-    val hue : Int = 136
-    val sat : Int = 100
-    val valu : Int = 90
-}
-
-object RedHSV{
-    val hue : Int = 5
-    val sat : Int = 92
-    val valu : Int = 94
 }

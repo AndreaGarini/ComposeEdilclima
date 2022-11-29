@@ -25,7 +25,7 @@ fun cameraScreen (navController: NavController, portrait: Boolean, gm: GameModel
     LaunchedEffect(key1 = Unit, block = {
         gm.listenToLevelChange()
     })
-    val level = gm.level.observeAsState()
+    val level = gm.playerLevelCounter.observeAsState()
 
 
     Column(modifier = Modifier.fillMaxSize()) {
