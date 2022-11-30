@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,23 +21,29 @@ import it.polito.did.compose.ui.theme.GameTheme
 fun WaitingScreen(portraitOrientation: Boolean, gm: GameModel){
 
     val navController = rememberNavController()
+    val splash = gm.splash.observeAsState()
 
-    BoxWithConstraints() {
-        NavHost(navController = navController, startDestination = "initialScreen") {
-            composable("initialScreen") {
-                initialScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
-            }
-            composable("MainScreen") {
-                MainScreenPlayer(portraitOrientation, gm)
-            }
-            composable("matchMakingScreen") {
-                matchMakingScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
-            }
-            composable("gameBoardScreen") {
-                gameBoardScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
-            }
-            composable("cameraScreen") {
-                cameraScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
+    if(splash.value!!){
+        splashScreen(gm, navController)
+    }
+    else{
+        BoxWithConstraints() {
+            NavHost(navController = navController, startDestination = "initialScreen") {
+                composable("initialScreen") {
+                    initialScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
+                }
+                composable("MainScreen") {
+                    MainScreenPlayer(portraitOrientation, gm, maxWidth, maxHeight)
+                }
+                composable("matchMakingScreen") {
+                    matchMakingScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
+                }
+                composable("gameBoardScreen") {
+                    gameBoardScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
+                }
+                composable("cameraScreen") {
+                    cameraScreen(navController = navController, portraitOrientation, gm, maxWidth, maxHeight)
+                }
             }
         }
     }

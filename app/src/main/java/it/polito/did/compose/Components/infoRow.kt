@@ -15,22 +15,22 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun infoRow(gm : GameModel, push : it.polito.did.compose.Components.pushResult){
+fun infoRow(gm : GameModel, push : Pair<it.polito.did.compose.Components.pushResult, String?>){
 
     val timeCounter = gm.playerTimerCountdown.observeAsState()
     val stats = gm.teamsStats.observeAsState()
-    val ableToPlay = gm.ableToPLay.observeAsState()
+    val ableToPlay = gm.playerTimer.observeAsState()
 
     var infoLayoutDefault by remember {
         mutableStateOf(true)
     }
 
-    if (ableToPlay.value!! && timeCounter.value!! > 60){
+    if (ableToPlay.value!= null && timeCounter.value!=null && timeCounter.value!! > 60){
         infoLayoutDefault = false
     }
 
     when {
-        push == pushResult.CardDown || push == pushResult.Success -> {
+        push.first == pushResult.CardDown || push.first == pushResult.Success -> {
             
             AnimatedContent(targetState = infoLayoutDefault, modifier = Modifier.fillMaxSize(),
             transitionSpec = { slideInHorizontally (tween(500)) { -it } with slideOutHorizontally (tween(500)) { it }})
@@ -43,21 +43,21 @@ fun infoRow(gm : GameModel, push : it.polito.did.compose.Components.pushResult){
                             .fillMaxHeight()
                             .weight(1f), horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center) {
-                            Text(text = gm.team)
+                            Text(text =  gm.team?:  "")
                         }
 
                         Column(modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f), horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center) {
-                            Text(text = "B: ${stats.value?.get(gm.team)?.budget}")
+                            Text(text = "B: ${stats.value?.get(gm.team)?.budget?: ""}")
                         }
 
                         Column(modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f), horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center) {
-                            if (timeCounter.value==null){
+                            if (timeCounter.value==null || (timeCounter != null && timeCounter.value!! > 60)){
                                 //todo : animazione di attesa turno del timer (tipo loading)
                             }
                             else {
@@ -85,26 +85,39 @@ fun infoRow(gm : GameModel, push : it.polito.did.compose.Components.pushResult){
             }
         }
 
-        push == pushResult.InvalidCard -> {
+        push.first == pushResult.InvalidCard -> {
             LaunchedEffect(key1 = Unit, block = {
                 delay (2000)
-                gm.pushResult.value = pushResult.CardDown
+                val pair : Pair<pushResult, String?> = pushResult.CardDown to null
+                gm.pushResult.value = pair
             })
             Row(modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center) {
             Text(text = " carta non valida", color = Color.Red)
         }}
-        push == pushResult.LowBudget ->{
+        push.first == pushResult.LowBudget ->{
             LaunchedEffect(key1 = Unit, block = {
             delay (2000)
-            gm.pushResult.value = pushResult.CardDown
+            val pair : Pair<pushResult, String?> = pushResult.CardDown to null
+            gm.pushResult.value = pair
             })
             Row(modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center) {
             Text(text = "budget esaurito", color = Color.Red)
         }}
+        push.first == pushResult.ResearchNeeded ->{
+            LaunchedEffect(key1 = Unit, block = {
+                delay (2000)
+                val pair : Pair<pushResult, String?> = pushResult.CardDown to null
+                gm.pushResult.value = pair
+            })
+            Row(modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center) {
+                Text(text = "ricerca richiesta : ${push.second}", color = Color.Red)
+            }}
     }
 }
 

@@ -11,8 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import it.polito.did.compose.DataClasses.researchSet
 import it.polito.did.compose.GameModel
 import it.polito.did.compose.R
 import it.polito.did.compose.Screen.Direction
@@ -23,30 +26,46 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
 
     val playedCards = gm.playedCardsPerTeam.observeAsState()
 
-    var push by remember {
-        mutableStateOf(pushResult.CardDown)
+    val ableToPlay = gm.playerTimer.observeAsState()
+
+    val researchNeededCheck : (String) -> Boolean = {
+
+        val resNeeded = gm.gameLogic.cardsMap.get(it)?.research == researchSet.Needed
+        val allResPlayed = if(resNeeded) gm.playedCardsPerTeam.value!!.get(gm.team)!!.values.containsAll( gm.gameLogic.cardsMap.get(it)?.resCard!!)
+        else false
+        !((resNeeded && allResPlayed) || !resNeeded)
     }
 
-    val ableToPlay = gm.ableToPLay.observeAsState()
+    val resNeededCodeString : (String) -> String = {
+        var exitString = ""
+        gm.gameLogic.cardsMap.get(it)!!.resCard!!.forEach {
+            if (!gm.playedCardsPerTeam.value!!.get(gm.team)!!.values.contains(it)){
+                exitString = exitString.plus("${it} ")
+            }
+        }
+        exitString
+    }
 
     val onClick : () -> Unit = {
-        //todo : fai un check sul timer per sapere se il giocatore può giocare
-        //todo: se il timer va a 0 metti pushing a false
-
-        Log.d("onClick working", "")
         gm.pushResult.value =
             when {
-                cardPlayable.equals("null") -> pushResult.CardDown
-                cardPlayable.equals("void") -> pushResult.InvalidCard
-                else -> pushResult.Success .also{
+                cardPlayable.equals("null") -> pushResult.CardDown to null
+                cardPlayable.equals("void") -> pushResult.InvalidCard to null
+                researchNeededCheck(cardPlayable) -> pushResult.ResearchNeeded to resNeededCodeString (cardPlayable)
+                else -> pushResult.Success to null .also{
                     val budget: Int = gm.getBudgetSnapshot(gm.playedCardsPerTeam.value!!.get(gm.team)!!.values.toList())
                     if (gm.gameLogic.cardsMap.get(cardPlayable)!!.money < budget){
                         gm.playCardInPos(index, cardPlayable)
                         animateToStart()
                         pushResult.CardDown
+                        gm.playerTimerCountdown.value = null
+                        gm.playerTimer.value?.cancel()
+                        gm.playerTimer.value = null
+                        gm.setTimeOutTrue()
                     }
-                    else gm.pushResult.value = pushResult.LowBudget
+                    else gm.pushResult.value = pushResult.LowBudget to null
                 }
+
             }
     }
 
@@ -58,7 +77,7 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
             Button(onClick = onClick,
-                enabled = playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index]) == null && ableToPlay.value!!) {
+                enabled = playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index]) == null && ableToPlay.value!=null) {
                 Text(text = "play card")
             }
         }
@@ -93,5 +112,5 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
 }
 
 enum class pushResult{
-    Success, CardDown, InvalidCard, LowBudget
+    Success, CardDown, InvalidCard, LowBudget, ResearchNeeded
 }

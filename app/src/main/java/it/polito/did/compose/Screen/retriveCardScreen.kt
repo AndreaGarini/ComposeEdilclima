@@ -37,7 +37,7 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
 
     val playedCards = gm.playedCardsPerTeam.observeAsState()
 
-    val ableToPlay = gm.ableToPLay.observeAsState()
+    val ableToPlay = gm.playerTimer.observeAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -99,7 +99,7 @@ fun retriveCardScreen(navController: NavController, portrait : Boolean, gm: Game
         horizontalArrangement = Arrangement.Center) {
             // todo: button enabled false se non c'è una carta
             Button(onClick = { gm.retriveCardFromPos(pagerState.currentPage) },
-            enabled = (playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[pagerState.currentPage]) != null) && ableToPlay.value!!) {
+            enabled = (playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[pagerState.currentPage]) != null) && ableToPlay.value!=null) {
                 Text(text = "retrive card")
             }
         }

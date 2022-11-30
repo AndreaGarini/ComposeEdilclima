@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
@@ -34,6 +35,7 @@ import androidx.navigation.NavController
 import it.polito.did.compose.Components.*
 import it.polito.did.compose.Components.pushResult
 import it.polito.did.compose.DataClasses.Card
+import it.polito.did.compose.DataClasses.researchSet
 import it.polito.did.compose.GameModel
 import it.polito.did.compose.R
 import it.polito.did.compose.ui.theme.GameTheme
@@ -62,7 +64,7 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
        mutableStateOf("null")
     }
 
-    val ableToPlay = gm.ableToPLay.observeAsState()
+    val ableToPlay = gm.playerTimer.observeAsState()
     val playerCards = gm.playerCards.observeAsState()
 
     val dragModifier : Modifier = Modifier
@@ -83,7 +85,7 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                             direction = Direction.Down
                             cardPlayable = "null"
                         }
-                        (y < 0 && ableToPlay.value!!) -> direction = Direction.Up
+                        (y < 0 && ableToPlay.value!=null) -> direction = Direction.Up
                     }
                 }
             }
@@ -95,13 +97,13 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
     }
 
     //condizione per far tornare la carta Down se si finisce il tempo con la carta in Up
-    if(!ableToPlay.value!! && direction == Direction.Up){
+    if(ableToPlay.value==null && direction == Direction.Up){
         animateToStart()
     }
 
     if (playerCards.value != null && playerCards.value!!.size < 7 ){
         for (i in playerCards.value!!.size until 7){
-            playerCards.value!!.add(i, Card("void", 0, 0, 0, 0, Card.researchSet.None, 1),)
+            playerCards.value!!.add(i, Card("void", 0, 0, 0, 0, researchSet.None, null,1),)
         }
     }
 

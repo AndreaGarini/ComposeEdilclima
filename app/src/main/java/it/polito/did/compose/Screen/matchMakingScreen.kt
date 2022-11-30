@@ -53,7 +53,7 @@ fun matchMakingScreen (navController: NavController, portrait: Boolean, gm: Game
                 Button(
                     onClick = {
                        navController.navigate("gameBoardScreen")
-
+                       gm.prepareLevel(gm.gameLogic.masterLevelCounter)
                     }
                 ) {
                     Text(text = "start match")

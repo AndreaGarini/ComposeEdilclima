@@ -7,10 +7,11 @@ class Card (
     var smog: Int,
     var comfort: Int,
     var research: researchSet,
+    var resCard : List<String>?,
     var level : Int,
         ) {
 
-    enum class researchSet {
-        None, Needed, Develop
-    }
+}
+enum class researchSet {
+    None, Needed, Develop
 }

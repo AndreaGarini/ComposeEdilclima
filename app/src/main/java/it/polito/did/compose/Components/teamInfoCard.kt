@@ -58,7 +58,7 @@ fun teamInfoCard(entry : Map.Entry<String, TeamInfo?>){
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = "Smog : ${entry.value?.smog}")
+                                Text(text = "Smog : ${if (entry.value!=null && entry.value!!.nullCheck()) entry.value!!.smog else 0}")
                             }
                             Row(
                                 modifier = Modifier
@@ -67,7 +67,7 @@ fun teamInfoCard(entry : Map.Entry<String, TeamInfo?>){
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = "Energy : ${entry.value?.energy}")
+                                Text(text = "Energy : ${if (entry.value!=null && entry.value!!.nullCheck()) entry.value!!.energy else 0}")
                             }
                             Row(
                                 modifier = Modifier
@@ -76,7 +76,7 @@ fun teamInfoCard(entry : Map.Entry<String, TeamInfo?>){
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = "Comfort : ${entry.value?.comfort}")
+                                Text(text = "Comfort : ${if (entry.value!=null && entry.value!!.nullCheck()) entry.value!!.comfort else 0}")
                             }
                         }
                         Column(
@@ -97,8 +97,7 @@ fun teamInfoCard(entry : Map.Entry<String, TeamInfo?>){
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                //todo: aggiungere punteggio quando avari inserito la logica
-                                Text(text = "347")
+                                Text(text = "${if (entry.value!=null && entry.value!!.nullCheck()) entry.value!!.points else 0}")
                             }
                             Spacer(modifier = Modifier.weight(1f))
                         }

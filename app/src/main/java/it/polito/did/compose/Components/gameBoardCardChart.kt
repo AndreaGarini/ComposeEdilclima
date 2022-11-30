@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -83,7 +84,6 @@ fun gameBoardCardChart(gm : GameModel, team : String){
                     targetValue = if (animateChartBars) (it.value / 100f) else 0f,
                     animationSpec = tween(2000)
                 )
-                Log.d("heigth : ", height.value.toString())
                 val colorValueList = generateColorChart(it.value, it.key)
                 val arcColor =
                     Color.hsv(colorValueList[0], colorValueList[1], colorValueList[2])
@@ -96,8 +96,9 @@ fun gameBoardCardChart(gm : GameModel, team : String){
                         .fillMaxHeight()
                         .weight(1f / teamInfoMap.size + 1),
                     verticalArrangement = Arrangement.Bottom,
-                    horizontalAlignment = Alignment.Start
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Divider(modifier = Modifier.fillMaxWidth(0.5f), thickness = 4.dp, color = color.value)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

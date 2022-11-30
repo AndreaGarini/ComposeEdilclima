@@ -25,6 +25,7 @@ fun gameBoardInfoCircle(gm : GameModel, circleWidth : Dp, circleHeight : Dp){
 
     val ongoingLevel = gm.ongoingLevel.observeAsState()
     val levelTimer = gm.levelTimerCountdown.observeAsState()
+    val levelStatus = gm.masterLevelStatus.observeAsState()
 
     if (ongoingLevel.value!!){
         val arcEndingAngle = (360f * ((levelTimer.value!!).toFloat()/420f))
@@ -35,14 +36,13 @@ fun gameBoardInfoCircle(gm : GameModel, circleWidth : Dp, circleHeight : Dp){
                 style = Stroke(width = circleWidth.times(0.05f).toPx(), cap = StrokeCap.Round))
         }
         Text(text = timeFormatMinSec((levelTimer.value!!).toFloat()))
-        //todo: aggiungere curva timer centrale per il livello (da animare)
     }
     else{
-            Button(onClick = { gm.startLevel(gm.gameLogic.masterLevelCounter) }, shape = CircleShape,
+            Button(onClick = { if (levelStatus.value!!.equals("preparing")) gm.prepareLevel(gm.gameLogic.masterLevelCounter) else {gm.startLevel() } }, shape = CircleShape,
                 modifier = Modifier
                     .height(IntrinsicSize.Max)
                     .width(IntrinsicSize.Max)) {
-                Text(text = "start level ${gm.gameLogic.masterLevelCounter}")
+                Text(text =if (levelStatus.value!!.equals("preparing")) "prepare level ${gm.gameLogic.masterLevelCounter}" else "start level ${gm.gameLogic.masterLevelCounter}")
             }
     }
 }

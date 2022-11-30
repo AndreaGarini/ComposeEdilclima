@@ -1,5 +1,8 @@
 package it.polito.did.compose
 
+import android.annotation.SuppressLint
+import android.media.Image
+import android.os.CountDownTimer
 import android.util.Log
 import androidx.compose.animation.core.SnapSpec
 import androidx.lifecycle.LifecycleObserver
@@ -19,6 +22,8 @@ import com.google.firebase.ktx.Firebase
 import it.polito.did.compose.Components.pushResult
 import it.polito.did.compose.DataClasses.Card
 import it.polito.did.compose.DataClasses.TeamInfo
+import it.polito.did.compose.DataClasses.dialogData
+import kotlinx.coroutines.delay
 import java.util.stream.Collectors
 
 class GameModel : ViewModel() {
@@ -32,9 +37,11 @@ class GameModel : ViewModel() {
 
     var playerCounter: MutableLiveData<Int> = MutableLiveData()
 
+
     val startMatch : MutableLiveData<Boolean> = MutableLiveData(false)
     val ongoingLevel : MutableLiveData<Boolean> = MutableLiveData(false)
     var levelTimerCountdown : MutableLiveData<Int?> = MutableLiveData(null)
+    var masterLevelStatus : MutableLiveData<String> = MutableLiveData("preparing")
 
     var playedCardsPerTeam : MutableLiveData<Map<String, Map<String, String>?>> = MutableLiveData(
         mutableMapOf("team1" to null, "team2" to null, "team3" to null, "team4" to null)
@@ -50,11 +57,17 @@ class GameModel : ViewModel() {
 
     // variabili lato player
     var playerCards : MutableLiveData<MutableList<Card>> = MutableLiveData<MutableList<Card>>()
-    var ableToPLay : MutableLiveData<Boolean> = MutableLiveData(false)
     var team : String = "null"
     var playerLevelCounter: MutableLiveData<Long> = MutableLiveData(0)
+    var playerLevelStatus : MutableLiveData<String?> = MutableLiveData(null)
     var playerTimerCountdown : MutableLiveData<Int?> = MutableLiveData(null)
-    var pushResult : MutableLiveData<pushResult> = MutableLiveData(it.polito.did.compose.Components.pushResult.CardDown)
+    var playerTimer : MutableLiveData<CountDownTimer?> = MutableLiveData(null)
+    var pushResult : MutableLiveData<Pair<pushResult, String?>> = MutableLiveData(it.polito.did.compose.Components.pushResult.CardDown to null)
+    var showDialog : MutableLiveData<dialogData?> = MutableLiveData(null)
+
+    //variabili sia master che player per schermate di splash e error
+    var splash : MutableLiveData<Boolean> = MutableLiveData(false)
+    var error : MutableLiveData<Boolean> = MutableLiveData(false)
 
     //todo: ovunque ci sia il test nei child di firebase devi inserire l'uid del master
 
@@ -91,7 +104,7 @@ class GameModel : ViewModel() {
                             .addOnCompleteListener {
                                 val newLevel : Int = gameLogic.nextLevel()
                                 giveCardsToPlayers(newLevel)
-                                // giveCardsToPlayer chiama all' onComplete setStartingCardsPerLevel, e lei chiama addPlayedCardsListener e addTeamtImeOutListener
+                                // giveCardsToPlayer chiama all' onComplete setStartingCardsPerLevel, e lei chiama addPlayedCardsListener
                             }
                     }.addOnFailureListener {
                         // situazione in cui ho preso il riferimento players del db ma non sono riuscito a dare il team a tutti i players
@@ -144,7 +157,6 @@ class GameModel : ViewModel() {
                                     //todo: fai in modo che ci sia un modo per contare i team se sono meno di 4 giocatori
                                     if (startingCardsServed==4) {
                                         addPlayedCardsListener()
-                                        addTeamTimeOutListener()
                                         startMatch.value = true
                                     }
                                 }
@@ -160,7 +172,7 @@ class GameModel : ViewModel() {
                                            val map: MutableMap<String, String> = mutableMapOf()
                                            for (playedCard in snapshot.children){
                                                if (!playedCard.value.toString().equals("no card"))
-                                               map.put(playedCard.key.toString(), playedCard.value.toString())
+                                                map.put(playedCard.key.toString(), playedCard.value.toString())
                                            }
                                            newStatsPerTeam(team, map)
                                            avatarMap = playedCardsPerTeam.value!!.toMutableMap()
@@ -177,26 +189,24 @@ class GameModel : ViewModel() {
                         } // questa la devono chiamare sia master che player
 
                             fun addTeamTimeOutListener(){
-                                // metti il timer al player, il timer scatta quando l'utente diventa able to play e 0 blocca la giocata in locale
-                                // e scrive solo time out true, se time out è true il master scrive il nuovo player in able to play
-                                db.child("matches").child("test").child("teams")
-                                    .addValueEventListener(object : ValueEventListener{
-                                        override fun onDataChange(snapshot: DataSnapshot) {
-                                            for (team in snapshot.children){
-                                                if (team.child("ableToPlay").value == "")
-                                                {
-                                                    val newPLayer: String = gameLogic.findNextPlayer(team.key!!, ableToPlayPerTeam.value!!.get(team.key)!!)
-                                                    ableToPlayPerTeam.value!!.replace(team.key!!, newPLayer)
-                                                    setPlayerAbleToPLay(newPLayer, team.key.toString())
-                                                }
-                                            }
-                                        }
 
-                                        override fun onCancelled(error: DatabaseError) {
-                                            TODO("Not yet implemented")
-                                        }
-                                    })
-                            } // da aggiungere per iniziare a giocare
+                                for (team in listOf("team1", "team2", "team3", "team4")){
+                                    db.child("matches").child("test").child("teams").child(team).child("ableToPlay")
+                                        .addValueEventListener(object : ValueEventListener{
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                               if(snapshot.value.toString().equals("")){
+                                                   val newPLayer: String = gameLogic.findNextPlayer(team, ableToPlayPerTeam.value!!.get(team)!!)
+                                                   ableToPlayPerTeam.value!!.replace(team, newPLayer)
+                                                   setPlayerAbleToPLay(newPLayer, team)
+                                               }
+                                            }
+                                            override fun onCancelled(error: DatabaseError) {
+                                                TODO("Not yet implemented")
+                                            }
+
+                                        })
+                                }
+                            } // da aggiungere per iniziare a giocare (chiamata in startLevel)
 
                                 fun setPlayerAbleToPLay(newPlayer : String, team: String){
                                     db.child("matches").child("test").child("teams").child(team)
@@ -205,23 +215,41 @@ class GameModel : ViewModel() {
                                         }.addOnFailureListener {  }
                                 } //chiamata in addTeamTimeOutListener
 
+    fun prepareLevel(level : Int){
+        if (gameLogic.masterLevelCounter == 1){
+            val levelValue = mapOf<String, Any> ("status" to masterLevelStatus.value!!, "count" to level)
+            db.child("matches").child("test").child("level").setValue(levelValue).addOnSuccessListener {
+                masterLevelStatus.value = "play"
+            }
+        }
+        else {
+            //todo: controlla che se parte il secondo livello non esploda tutto (si dovrebbe anche bloccare il timer del player alla fine del timer di livello)
+                masterLevelStatus.value = "play"
+                giveCardsToPlayers(level)
+                setStartingCardsPerLevel(level)
+        }
+    }
 
-    fun startLevel(level : Int){
 
-        //todo: fare in modo che il counter non del player non parta se non è stato fatto partire l livello lato master
+    fun startLevel(){
 
-        levelTimerCountdown.value = 420
         val onTick : () -> Unit ={
             levelTimerCountdown.value = levelTimerCountdown.value!! - 1
         }
 
         val onFinish : () -> Unit ={
+              ongoingLevel.value = false
+              masterLevelStatus.value = "preparing"
               levelTimerCountdown.value = null
-              //todo: cosa succede quando il livello finisce?
+              gameLogic.masterLevelCounter = gameLogic.nextLevel()
+              val levelValue = mapOf<String, Any> ("status" to masterLevelStatus.value!!, "count" to gameLogic.masterLevelCounter)
+              db.child("matches").child("test").child("level").setValue(levelValue)
         }
 
-        db.child("matches").child("test").child("level").setValue(level).addOnSuccessListener {
+        db.child("matches").child("test").child("level").child("status").setValue("play").addOnSuccessListener {
+            addTeamTimeOutListener()
             ongoingLevel.value = true
+            levelTimerCountdown.value = 420
             gameLogic.setLevelTimer(onTick, onFinish)
         }
     }
@@ -229,25 +257,14 @@ class GameModel : ViewModel() {
     fun newStatsPerTeam(team :String, map: MutableMap<String, String>){
         val avatarMap : MutableMap<String, TeamInfo?> = teamsStats.value!!.toMutableMap()
 
-        val lv : Int = if (playerLevelCounter.value!!.toInt()==0) gameLogic.masterLevelCounter else playerLevelCounter.value!!.toInt()
+            val moves : Int = if (avatarMap.get(team)!= null && avatarMap.get(team)!!.nullCheck()) avatarMap.get(team)!!.moves!! else 0
+            val lv : Int = if (playerLevelCounter.value!!.toInt()==0) gameLogic.masterLevelCounter else playerLevelCounter.value!!.toInt()
 
-        val budget =
-            gameLogic.zoneMap.get(lv)?.budget?.plus(
-                map.values.map { a -> gameLogic.cardsMap.get(a)!!.money }.toList().sum()
-            )
-        val energy = gameLogic.zoneMap.get(lv)?.initEnergy?.plus(
-            map.values.map { a -> gameLogic.cardsMap.get(a)!!.energy }.toList().sum()
-        )
-        val smog = gameLogic.zoneMap.get(lv)?.initSmog?.plus(
-            map.values.map { a -> gameLogic.cardsMap.get(a)!!.smog }.toList().sum()
-        )
-        val comfort = gameLogic.zoneMap.get(lv)?.initComfort?.plus(
-            map.values.map { a -> gameLogic.cardsMap.get(a)!!.comfort }.toList().sum()
-        )
-        avatarMap.remove(team)
-        avatarMap.put(team, TeamInfo(budget, smog, energy, comfort))
-        Log.d("avatar map in newStatsPerTeam : ", avatarMap.get("team1")!!.smog.toString())
-        teamsStats.value = avatarMap
+            avatarMap.remove(team)
+            //moves + 1 serve per fare in modo che le nuove team info tengano conto di una mossa in più
+            // (questa funzone viene chiamata ad ogni mossa)
+            avatarMap.put(team, gameLogic.evaluatePoints(lv, map, moves + 1))
+            teamsStats.value = avatarMap
 
     } //chiamata in addPlayedCardsListener
 
@@ -269,7 +286,28 @@ class GameModel : ViewModel() {
         db.child("matches").child("test").child("level")
             .addValueEventListener(object: ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if(!snapshot.value!!.equals("")) playerLevelCounter.value = snapshot.value as Long
+                    if(!snapshot.value!!.equals("")){
+                        //questo if controlla che il value del level sia cambiato effettivamente (e non che l'ondata change sia stato chiamato e basta)
+                        //e che lo stato sia preparing
+                        if ( playerLevelCounter.value != snapshot.child("count").value as Long &&
+                            playerLevelStatus.value != snapshot.child("status").value as String &&
+                            snapshot.child("status").value.toString().equals("preparing"))
+                            splash.value = true
+
+
+                        playerLevelCounter.value = snapshot.child("count").value as Long
+                        playerLevelStatus.value = snapshot.child("status").value as String
+
+                        // questo dovrebbe bloccare il timer quando il livello finisce e fare le operazioni di fine turno
+                        if (snapshot.child("status").value.toString().equals("preparing") && playerTimerCountdown.value != null){
+
+                                playerTimer.value?.cancel()
+                                playerTimer.value = null
+                                playerTimerCountdown.value = null
+                                setTimeOutTrue()
+
+                        }
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -313,23 +351,30 @@ class GameModel : ViewModel() {
             // quindi popola i failure)
             //todo: togli 1 e metti il player uid
              db.child("matches").child("test").child("players")
-                .child("1").child("team").get().addOnSuccessListener {
-                    team = it.value.toString()
+                .child("1").child("team").get().addOnCompleteListener {
+                    team = it.getResult()!!.value.toString()
                      db.child("matches").child("test").child("teams").child(team).child("ableToPlay")
                          .addValueEventListener(object : ValueEventListener{
                              override fun onDataChange(snapshot: DataSnapshot) {
-                                 if (snapshot.value.toString().equals("1")){
-                                     ableToPLay.value = true
+                                 if (snapshot.value.toString().equals("1") && playerLevelCounter.value != 0L && playerLevelStatus.value?.equals("play") == true){
                                      playerTimerCountdown.value = 62
                                      val onTick : () -> Unit = {
+                                         if (playerTimerCountdown!=null){
+                                         //se non è ancora finito il tempo di livello eseguo
                                          playerTimerCountdown.value = playerTimerCountdown.value as Int - 1
+                                         }
                                      }
                                      val onFinish : () -> Unit = {
-                                         ableToPLay.value = false
-                                         playerTimerCountdown.value = null
-                                         setTimeOutTrue()
+                                         //se il timer finisce mentre c'è ancora tempo nel livello eseguo qui le operazioni di fine turno
+                                         // (altrimenti in listenToLevelChange)
+                                         if (playerTimer.value!=null){
+                                             playerTimer.value!!.cancel()
+                                             playerTimerCountdown.value = null
+                                             setTimeOutTrue()
+                                         }
                                      }
-                                     gameLogic.setPlayerTimer(62000, 1000, onTick, onFinish)
+                                     //se c'è anche la schermata di splash attiva do un secondo in più al timer perchè il primo giocatore parta comunque da 60
+                                     playerTimer.value = gameLogic.setPlayerTimer( if(splash.value!!) 63000 else 62000, 1000, onTick, onFinish)
                                  }
                              }
 
@@ -348,9 +393,10 @@ class GameModel : ViewModel() {
 
 
     fun setTimeOutTrue(){
+        Log.d("team in set time out true : ", team)
         db.child("matches").child("test").child("teams").child(team)
             .child("ableToPlay").setValue("").addOnSuccessListener {
-                Log.d("team timOut for team : ", team)
+
             }.addOnFailureListener {
                 // failure
             }
@@ -358,7 +404,6 @@ class GameModel : ViewModel() {
 
     fun playCardInPos ( pos: Int, cardCode: String){
 
-        //todo: fai giocare solo se il timer interno non è a 0, il che a sua volta vuol dire che il player è ableToPlay
               db.child("matches").child("test").child("teams").child(team)
                   .child("playedCards").child(gameLogic.months[pos]).setValue(cardCode)
                   .addOnSuccessListener {
