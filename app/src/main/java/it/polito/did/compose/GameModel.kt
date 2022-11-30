@@ -278,7 +278,6 @@ class GameModel : ViewModel() {
         count++
         db.child("matches").child("test").child("players")
             .child(count.toString()).setValue("")  //.child(gameLogic.firebaseAuth.uid.toString()).setValue(playerCounter))
-
     }
 
     //todo: listen to level change fa partire la partita anche se il player non si è mai connesso
@@ -292,7 +291,9 @@ class GameModel : ViewModel() {
                         if ( playerLevelCounter.value != snapshot.child("count").value as Long &&
                             playerLevelStatus.value != snapshot.child("status").value as String &&
                             snapshot.child("status").value.toString().equals("preparing"))
+                        {
                             splash.value = true
+                        }
 
 
                         playerLevelCounter.value = snapshot.child("count").value as Long

@@ -25,6 +25,7 @@ fun splashScreen(gm : GameModel, navController: NavController){
     val levelCount = gm.playerLevelCounter.observeAsState()
     val levelStatus = gm.playerLevelStatus.observeAsState()
 
+    //todo: pusha lo splash screen fuori dal back stack
     LaunchedEffect(key1 = Unit, block = {
         //todo: fai un test senza connessione, per vedere se almeno non si rompe anche senza dati
         gm.playerReadyToPlay()

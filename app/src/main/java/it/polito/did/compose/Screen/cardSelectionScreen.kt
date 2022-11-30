@@ -108,7 +108,6 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
     }
 
     //todo : sistema l'animazione di Up in modo che resti solo la carta centrale
-    //todo: togli il null check da qui e metti la schermata di splash prima (se il giocatore va a zero carte deve poter comunque vedere questa schermata)
 
     if (playerCards.value != null && (playerCards.value!!.size > 0)) {
         //todo: sistemare il binding che salta
@@ -125,7 +124,7 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                 .replace("'firstDist'", (usableHeight.times(0.3F).toString().take(3)))
                 .replace("'secondDist'", (usableHeight.times(0.3F).toString().take(3)))
                 .replace("'thirdDist'", (usableHeight.times(0.25F).toString().take(3)))
-                .replace("'centralUpDist'", (usableHeight.times(0.45F).toString().take(3)))
+                .replace("'centralUpDist'", (usableHeight.times(0.35F).toString().take(3)))
                 .replace("'firstUpDist'", (usableHeight.times(0.1F).toString().take(3)))
                 .replace("'secondUpDist'", (usableHeight.times(0.05F).toString().take(3)))
 
@@ -133,7 +132,7 @@ fun cardSelectionScreen(navController: NavController?, portrait: Boolean, gm: Ga
                 
                 Row(modifier = Modifier
                     .fillMaxWidth()
-                    .weight(2f)){
+                    .weight(3f)){
                     cardCarousel(gm = gm, cardPlayable, animateToStart, usableWidth)
                 }
 

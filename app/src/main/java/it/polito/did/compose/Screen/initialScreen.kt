@@ -25,6 +25,7 @@ import it.polito.did.compose.ui.theme.GameTheme
 @Composable
 fun initialScreen(navController: NavController?, portrait: Boolean, gm: GameModel, usableWidth : Dp, usableHeight : Dp) {
 
+    //todo: aggiungi una password da inserire se si decide di creare un nuovo match
     BoxWithConstraints {
 
         if(portrait){

@@ -2,6 +2,7 @@ package it.polito.did.compose.Components
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -69,22 +70,11 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
             }
     }
 
-
+    //todo: se hai tempo aggiungi animazione di inserimento nuova carta
     Row (modifier = pagerCardModifier){
         Column(modifier = Modifier
             .fillMaxHeight()
-            .weight(1f),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
-            Button(onClick = onClick,
-                enabled = playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index]) == null && ableToPlay.value!=null) {
-                Text(text = "play card")
-            }
-        }
-        Column(modifier = Modifier
-            .fillMaxHeight()
             .weight(2f)) {
-            Card(modifier = Modifier.fillMaxSize()) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     Row(modifier = Modifier
                         .fillMaxWidth()
@@ -94,22 +84,53 @@ fun pagerCard(index: Int, gm: GameModel, cardPlayable : String, animateToStart: 
                         val text = playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index])
                         if(text != null)
                             Text(text = text)
-                        else
-                            Text(text = "no card")
-
                     }
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .weight(3f),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center) {
-                        Image(painter = painterResource(id = R.drawable.ic_android_black_24dp), contentDescription = "pagerCard")
+                            if (playedCards.value?.get(gm.team)?.get(gm.gameLogic.months[index])!=null)
+                                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center){
+                                        Spacer(modifier = Modifier.weight(0.5f))
+                                        Card(modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxHeight()) {
+                                            Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center) {
+                                                Image(painter = painterResource(id = R.drawable.ic_android_black_24dp),
+                                                    contentDescription = "pagerCard", modifier = Modifier.fillMaxSize())
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.weight(0.5f))
+                                    }
+                            else
+                                Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center){
+                                    Spacer(modifier = Modifier.weight(0.5f))
+                                    Card(modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                        .clickable(
+                                            onClick = onClick,
+                                            enabled = playedCards.value
+                                                ?.get(gm.team)
+                                                ?.get(gm.gameLogic.months[index]) == null && ableToPlay.value != null
+                                        )) {
+                                        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center) {
+                                            Text(text = "Click to play card")
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.weight(0.5f))
+                                }
+
+                        }
                     }
-                }
             }
         }
     }
-}
 
 enum class pushResult{
     Success, CardDown, InvalidCard, LowBudget, ResearchNeeded

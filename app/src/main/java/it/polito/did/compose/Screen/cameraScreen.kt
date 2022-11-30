@@ -28,9 +28,17 @@ fun cameraScreen (navController: NavController, portrait: Boolean, gm: GameModel
         gm.listenToLevelChange()
     })
 
+    val levelCounter = gm.playerLevelCounter.observeAsState()
+
 
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center) {
+        if (levelCounter.value!! > 0)
+            Button(onClick = {  navController.navigate("MainScreen") }) {
+                Text("enter match")
+            }
+
+        else
         Button(onClick = { gm.joinMatch()}) {
             Text(text = "joinMatch")
         }

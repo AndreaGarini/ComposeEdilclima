@@ -37,6 +37,8 @@ import kotlin.math.absoluteValue
 @Composable
 fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Unit, usableWidth : Dp){
 
+    //todo: controllare che l'entrata in gioco funzioni e che l'onClick della card funzioni
+
       val pagerState = rememberPagerState()
       val coroutineScope = rememberCoroutineScope()
 
@@ -73,7 +75,7 @@ fun cardCarousel(gm :GameModel, cardPlayable : String, animateToStart: () -> Uni
           HorizontalPager(
               count = gm.gameLogic.months.size,
               state = pagerState,
-              modifier = Modifier.weight(2.5f)
+              modifier = Modifier.weight(3.5f)
           ) { index ->
               val pagerCardModifier = Modifier.fillMaxSize().
                   graphicsLayer {
