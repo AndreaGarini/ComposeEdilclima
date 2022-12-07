@@ -3,12 +3,11 @@ package it.polito.did.compose.Screen
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +24,19 @@ import it.polito.did.compose.ui.theme.GameTheme
 @Composable
 fun initialScreen(navController: NavController?, portrait: Boolean, gm: GameModel, usableWidth : Dp, usableHeight : Dp) {
 
-    //todo: aggiungi una password da inserire se si decide di creare un nuovo match
+    LaunchedEffect(key1 = Unit, block = {
+        gm.getMasterPassword()
+    })
+
+    var startMatchPressed by remember{
+        mutableStateOf(false)
+    }
+
+    var text by remember{
+        mutableStateOf("")
+    }
+
+
     BoxWithConstraints {
 
         if(portrait){
@@ -46,23 +57,21 @@ fun initialScreen(navController: NavController?, portrait: Boolean, gm: GameMode
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround) {
                     Button (onClick = {
-                        navController?.navigate("matchMakingScreen")
+                        navController!!.navigate("matchMakingScreen")
                     }){
                         Text(text = "Start Match")
                     }
                 }
 
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround) {
-                    Button (onClick = {
-                        navController?.navigate("cameraScreen")
-                    }){
-                        Text(text = "Join Match")
+                    horizontalArrangement = Arrangement.Center) {
+                        Button(onClick = { navController!!.navigate("cameraScreen")}) {
+                            Text("join match")
+                        }
                     }
-                }
             }
         }
 
@@ -71,7 +80,8 @@ fun initialScreen(navController: NavController?, portrait: Boolean, gm: GameMode
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround) {
                 Column(modifier = Modifier
-                    .fillMaxSize().weight(1f),
+                    .fillMaxSize()
+                    .weight(1f),
                     verticalArrangement = Arrangement.SpaceAround,
                     horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
@@ -83,7 +93,8 @@ fun initialScreen(navController: NavController?, portrait: Boolean, gm: GameMode
                     )
                 }
                 Column(modifier = Modifier
-                    .fillMaxSize().weight(1f),
+                    .fillMaxSize()
+                    .weight(1f),
                     verticalArrangement = Arrangement.SpaceAround,
                     horizontalAlignment = Alignment.CenterHorizontally) {
                     Button(onClick = {

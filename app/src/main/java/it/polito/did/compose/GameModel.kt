@@ -36,7 +36,7 @@ class GameModel : ViewModel() {
     private var count: Int = 0 //todo: variabile per dare un nome in test ai players, da sostituire con i vari uid
 
     var playerCounter: MutableLiveData<Int> = MutableLiveData()
-
+    var password : MutableLiveData<String> = MutableLiveData("")
 
     val startMatch : MutableLiveData<Boolean> = MutableLiveData(false)
     val ongoingLevel : MutableLiveData<Boolean> = MutableLiveData(false)
@@ -72,6 +72,14 @@ class GameModel : ViewModel() {
     //todo: ovunque ci sia il test nei child di firebase devi inserire l'uid del master
 
     // logica lato master
+
+    //recupero la password lato master
+    fun getMasterPassword(){
+        db.child("masterPassword").get().addOnSuccessListener{
+            password.value =  it.value.toString()
+        }
+    }
+
 
         //funzioni per creare un match e far connettere i players
         fun createNewMatch() {
